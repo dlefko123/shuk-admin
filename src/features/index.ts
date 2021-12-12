@@ -1,3 +1,3 @@
-import categoryReducer from "./category";
+import authReducer from "./auth";
 
-export { categoryReducer };
+export { authReducer };

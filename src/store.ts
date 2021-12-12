@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import { categoryReducer } from './features';
+import categoryApi from './services/category';
+import { authReducer } from './features';
 
 const store = configureStore({
   reducer: {
-    category: categoryReducer
+    [categoryApi.reducerPath]: categoryApi.reducer,
+    auth: authReducer
   },
 });
 
