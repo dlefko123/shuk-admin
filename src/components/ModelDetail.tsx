@@ -2,9 +2,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/no-array-index-key */
-import React, {
-  MutableRefObject, useEffect, useMemo, useRef,
-} from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import {
   useTable, useResizeColumns, useFlexLayout, useRowSelect,
 } from 'react-table';
@@ -18,21 +16,8 @@ type DataTableProps = {
   }[];
 };
 
-const IndeterminateCheckbox = React.forwardRef(
-  ({ indeterminate, ...rest }: any, ref) => {
-    const defaultRef = React.useRef();
-    const resolvedRef = (ref || defaultRef) as MutableRefObject<any>;
-
-    React.useEffect(() => {
-      if (resolvedRef && resolvedRef?.current) {
-        resolvedRef.current.indeterminate = indeterminate;
-      }
-    }, [resolvedRef, indeterminate]);
-
-    return (
-      <input type="checkbox" ref={resolvedRef} {...rest} />
-    );
-  },
+const Checkbox = ({ selected, onToggle }: { selected: boolean, onToggle: (e: React.ChangeEvent) => void }) => (
+  <input type="checkbox" checked={selected} onChange={onToggle} />
 );
 
 const DataTable = ({ data, columns }: DataTableProps) => {
@@ -59,6 +44,11 @@ const DataTable = ({ data, columns }: DataTableProps) => {
     useFlexLayout,
     useRowSelect,
     (hooks) => {
+      const toggle = (e, row, tog) => {
+        tog(false);
+        row.getToggleRowSelectedProps().onChange(e);
+      };
+
       hooks.allColumns.push((cols) => [
         {
           id: 'selection',
@@ -66,14 +56,9 @@ const DataTable = ({ data, columns }: DataTableProps) => {
           minWidth: 35,
           width: 35,
           maxWidth: 35,
-          Header: ({ getToggleAllRowsSelectedProps }: any) => (
+          Cell: ({ row, toggleAllRowsSelected }: any) => (
             <div>
-              <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
-            </div>
-          ),
-          Cell: ({ row }: any) => (
-            <div>
-              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+              <Checkbox selected={row.isSelected} onToggle={(e) => toggle(e, row, toggleAllRowsSelected)} />
             </div>
           ),
         },
