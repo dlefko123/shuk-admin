@@ -1,10 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "./store";
 import { checkIsTokenValid, setToken } from "./features/auth";
+import './styles/global.scss';
+import ModelsPane from "./components/ModelsPane";
+import { Model } from "./lib/constants";
 
 const App = () => {
   const dispatch = useAppDispatch();
   const { isAuthenticated, token } = useAppSelector((state) => state.auth);
+  const [selectedModel, setSelectedModel] = useState<Model | undefined>(undefined);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -24,7 +28,11 @@ const App = () => {
     <div className="App">
       {isAuthenticated && (
         <>
-          <h1>Welcome to the Shuk Admin API</h1>
+          <h1 className="welcome-header">Welcome to the Shuk Admin API</h1>
+
+          <main>
+            <ModelsPane selectModel={(model) => setSelectedModel(m => !m ? model : undefined)} />
+          </main>
         </>
       )}
     </div>
