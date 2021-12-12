@@ -3,12 +3,15 @@ import { useAppDispatch, useAppSelector } from "./store";
 import { checkIsTokenValid, setToken } from "./features/auth";
 import './styles/global.scss';
 import ModelsPane from "./components/ModelsPane";
-import { Model } from "./lib/constants";
+import { Model } from "./lib/models";
+import ModelDetail from "./components/ModelDetail";
+import { useGetCategoriesQuery } from "./services/category";
 
 const App = () => {
   const dispatch = useAppDispatch();
   const { isAuthenticated, token } = useAppSelector((state) => state.auth);
   const [selectedModel, setSelectedModel] = useState<Model | undefined>(undefined);
+  const { data: categories, isLoading } = useGetCategoriesQuery();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -22,7 +25,7 @@ const App = () => {
     if (token) {
       dispatch(checkIsTokenValid());
     }
-  }, [dispatch, token])
+  }, [dispatch, token]);
   
   return (
     <div className="App">
@@ -31,7 +34,8 @@ const App = () => {
           <h1 className="welcome-header">Welcome to the Shuk Admin API</h1>
 
           <main>
-            <ModelsPane selectModel={(model) => setSelectedModel(m => !m ? model : undefined)} />
+            <ModelsPane selectModel={(model) => setSelectedModel(m => m?.name !== model.name ? model : undefined)} />
+            {selectedModel && <ModelDetail model={selectedModel} />}
           </main>
         </>
       )}

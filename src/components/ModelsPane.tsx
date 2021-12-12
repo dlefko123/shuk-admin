@@ -1,4 +1,4 @@
-import { models, Model } from "../lib/constants";
+import { models, Model } from "../lib/models";
 
 type ModelsPaneProps = {
   selectModel: (model: Model) => void;
