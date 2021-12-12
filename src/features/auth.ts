@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { RootState } from '../store';
 
 export interface AuthState {
   isAuthenticated: boolean;
@@ -10,6 +11,25 @@ const initialState: AuthState = {
   token: null,
 };
 
+export const checkIsTokenValid = createAsyncThunk(
+  `auth/checkIsTokenValid`,
+  async (_, thunkAPI) => {
+    const token = (thunkAPI.getState() as RootState).auth.token;
+    const response = await fetch(`/5aef1e692/categories`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    });
+    console.log(response);
+    if (response.status === 401) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+);
+
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -20,6 +40,11 @@ export const authSlice = createSlice({
     setToken: (state, action: PayloadAction<string | null>) => {
       state.token = action.payload;
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(checkIsTokenValid.fulfilled, (state, action) => {
+      state.isAuthenticated = action.payload;
+    });
   }
 });
 

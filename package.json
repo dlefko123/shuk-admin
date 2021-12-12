@@ -47,5 +47,6 @@
   },
   "devDependencies": {
     "sass-loader": "^12.4.0"
-  }
+  },
+  "proxy": "https://api.shukapp.com"
 }
