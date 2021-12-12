@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import categoryApi from './services/category';
 import subcategoryApi from './services/subcategory';
@@ -11,15 +11,15 @@ const store = configureStore({
     [categoryApi.reducerPath]: categoryApi.reducer,
     [subcategoryApi.reducerPath]: subcategoryApi.reducer,
     [tagApi.reducerPath]: tagApi.reducer,
-    auth: authReducer
+    auth: authReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat([categoryApi.middleware, subcategoryApi.middleware, tagApi.middleware])
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat([categoryApi.middleware, subcategoryApi.middleware, tagApi.middleware]),
 });
 
 export default store;
 
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
 
-export const useAppDispatch = () => useDispatch<AppDispatch>()
-export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

@@ -1,9 +1,8 @@
+import { useGetCategoriesQuery } from '../services/category';
+import { useGetSubcategoriesQuery } from '../services/subcategory';
+import { useGetTagsQuery } from '../services/tag';
 
-import { useGetCategoriesQuery } from "../services/category";
-import { useGetSubcategoriesQuery } from "../services/subcategory";
-import { useGetTagsQuery } from "../services/tag";
-
-const defaultHook = () => { return { data: null, isLoading: false, error: false }; };
+const defaultHook = () => ({ data: null, isLoading: false, error: false });
 
 export const models = [
   { name: 'Category', value: 'categories', getAll: useGetCategoriesQuery },

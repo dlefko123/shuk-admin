@@ -5,15 +5,15 @@ export type Tag = {
   tag_group_id: string;
   name_en: string;
   name_he: string;
-}
+};
 
 export interface TagState {
   tags: Tag[];
-};
+}
 
 const tagApi = createApi({
   reducerPath: 'tag',
-  baseQuery: fetchBaseQuery({baseUrl: `/tags`}),
+  baseQuery: fetchBaseQuery({ baseUrl: '/tags' }),
   tagTypes: ['Tag'],
   endpoints: (builder) => ({
     getTagById: builder.query<Tag, string>({ query: (id) => `/${id}` }),
@@ -41,9 +41,11 @@ const tagApi = createApi({
       }),
       invalidatesTags: ['Tag'],
     }),
-  })
+  }),
 });
 
-export const { useAddTagMutation, useUpdateTagMutation, useDeleteTagMutation, useGetTagsQuery, useGetTagByIdQuery } = tagApi;
+export const {
+  useAddTagMutation, useUpdateTagMutation, useDeleteTagMutation, useGetTagsQuery, useGetTagByIdQuery,
+} = tagApi;
 
 export default tagApi;

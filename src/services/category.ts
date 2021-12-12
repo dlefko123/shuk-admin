@@ -6,15 +6,15 @@ export type Category = {
   name_he: string;
   subcategories: Category[];
   category_id?: string;
-}
+};
 
 export interface CategoryState {
   categories: Category[];
-};
+}
 
 const categoryApi = createApi({
   reducerPath: 'category',
-  baseQuery: fetchBaseQuery({baseUrl: `/categories`}),
+  baseQuery: fetchBaseQuery({ baseUrl: '/categories' }),
   tagTypes: ['Category'],
   endpoints: (builder) => ({
     getCategoryById: builder.query<Category, string>({ query: (id) => `/${id}` }),
@@ -42,9 +42,11 @@ const categoryApi = createApi({
       }),
       invalidatesTags: ['Category'],
     }),
-  })
+  }),
 });
 
-export const { useAddCategoryMutation, useUpdateCategoryMutation, useDeleteCategoryMutation, useGetCategoriesQuery, useGetCategoryByIdQuery } = categoryApi;
+export const {
+  useAddCategoryMutation, useUpdateCategoryMutation, useDeleteCategoryMutation, useGetCategoriesQuery, useGetCategoryByIdQuery,
+} = categoryApi;
 
 export default categoryApi;

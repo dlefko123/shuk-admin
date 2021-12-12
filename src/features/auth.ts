@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../store';
 
@@ -12,22 +13,21 @@ const initialState: AuthState = {
 };
 
 export const checkIsTokenValid = createAsyncThunk(
-  `auth/checkIsTokenValid`,
+  'auth/checkIsTokenValid',
   async (_, thunkAPI) => {
-    const token = (thunkAPI.getState() as RootState).auth.token;
-    const response = await fetch(`/categories`, {
+    const { token } = (thunkAPI.getState() as RootState).auth;
+    const response = await fetch('/categories', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
     });
-    console.log(response);
+
     if (response.status === 401) {
       return false;
-    } else {
-      return true;
     }
-  }
+    return true;
+  },
 );
 
 export const authSlice = createSlice({
@@ -39,13 +39,13 @@ export const authSlice = createSlice({
     },
     setToken: (state, action: PayloadAction<string | null>) => {
       state.token = action.payload;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(checkIsTokenValid.fulfilled, (state, action) => {
       state.isAuthenticated = action.payload;
     });
-  }
+  },
 });
 
 export const { setIsAuthenticated, setToken } = authSlice.actions;

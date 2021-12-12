@@ -3,11 +3,11 @@ import type { Category } from './category';
 
 export interface SubcategoryState {
   subcategories: Category[];
-};
+}
 
 const subcategoryApi = createApi({
   reducerPath: 'subcategory',
-  baseQuery: fetchBaseQuery({baseUrl: `/subcategories`}),
+  baseQuery: fetchBaseQuery({ baseUrl: '/subcategories' }),
   tagTypes: ['Subcategory'],
   endpoints: (builder) => ({
     getSubcategory: builder.query<Category, string>({ query: (id) => `/${id}` }),
@@ -35,9 +35,11 @@ const subcategoryApi = createApi({
       }),
       invalidatesTags: ['Subcategory'],
     }),
-  })
+  }),
 });
 
-export const { useAddSubcategoryMutation, useDeleteSubcategoryMutation, useGetSubcategoriesQuery, useGetSubcategoryQuery, useUpdateSubategoryMutation } = subcategoryApi;
+export const {
+  useAddSubcategoryMutation, useDeleteSubcategoryMutation, useGetSubcategoriesQuery, useGetSubcategoryQuery, useUpdateSubategoryMutation,
+} = subcategoryApi;
 
 export default subcategoryApi;
