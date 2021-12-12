@@ -12,13 +12,14 @@ type DataTableProps = {
     Header: string;
     accessor: string;
   }[];
+  onSelect: (id: string, selected: boolean) => void;
 };
 
 const Checkbox = ({ selected, onToggle }: { selected: boolean, onToggle: (e: React.ChangeEvent) => void }) => (
   <input type="checkbox" checked={selected} onChange={onToggle} />
 );
 
-const DataTable = ({ data, columns }: DataTableProps) => {
+const DataTable = ({ data, columns, onSelect }: DataTableProps) => {
   const headerRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
 
@@ -42,8 +43,9 @@ const DataTable = ({ data, columns }: DataTableProps) => {
     useFlexLayout,
     useRowSelect,
     (hooks) => {
-      const toggle = (e, row, tog) => {
-        tog(false);
+      const toggle = (e, row, toggleAll) => {
+        toggleAll(false);
+        onSelect(row.original.id, !row.isSelected);
         row.getToggleRowSelectedProps().onChange(e);
       };
 

@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { Model } from '../lib/models';
+import CustomModal from './CustomModal';
 import DataTable from './DataTable';
 
 type ModelDetailProps = {
@@ -17,6 +18,8 @@ const longColumns = [
 const ModelDetail = ({ model }: ModelDetailProps) => {
   const { name, getAll: useAllData } = model;
   const { data: apiAllData, isLoading, error } = useAllData();
+  const [isDeleteModalShown, setIsDeleteModalShown] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const data = useMemo(() => apiAllData || [], [apiAllData]);
   const columns = useMemo(() => {
@@ -28,18 +31,41 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
     }));
   }, [data]);
 
-  return (
-    <div className="model-detail">
-      <h2 className="model-name">{name}</h2>
-      {isLoading && <p>Loading...</p>}
-      {error && !isLoading && <p>There was an error retrieving the requested data.</p>}
+  const initiateDelete = () => {
+    if (selectedId) {
+      setIsDeleteModalShown(true);
+    }
+  };
 
-      {!isLoading && !error && (
-        <div className="table-container">
-          <DataTable data={data} columns={columns} />
+  const onSelect = (id: string, selected: boolean) => {
+    if (!selected) {
+      setSelectedId(null);
+    } else {
+      setSelectedId(id);
+    }
+  };
+
+  return (
+    <>
+      <div className="model-detail">
+        <h2 className="model-name">{name}</h2>
+        <div className="action-buttons">
+          <button type="button" className="action-btn" onClick={initiateDelete}>Delete</button>
         </div>
-      )}
-    </div>
+
+        {isLoading && <p>Loading...</p>}
+        {error && !isLoading && <p>There was an error retrieving the requested data.</p>}
+
+        {!isLoading && !error && (
+          <div className="table-container">
+            <DataTable data={data} columns={columns} onSelect={onSelect} />
+          </div>
+        )}
+      </div>
+      <CustomModal show={isDeleteModalShown} close={() => setIsDeleteModalShown(false)} title="Delete">
+        <p>Are you sure you want to delete this entry?</p>
+      </CustomModal>
+    </>
   );
 };
 
