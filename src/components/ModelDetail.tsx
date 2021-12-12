@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';

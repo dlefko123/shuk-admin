@@ -23,15 +23,26 @@ const tagApi = createApi({
   }),
   tagTypes: ['Tag'],
   endpoints: (builder) => ({
-    getTagById: builder.query<Tag, string>({ query: (id) => `/${id}` }),
-    getTags: builder.query<Tag[], void>({ query: () => '' }),
+    getTagById: builder.query<Tag, string>({
+      query: (id) => `/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Tag', id }],
+    }),
+    getTags: builder.query<Tag[], void>({
+      query: () => '',
+      providesTags: (result) => (result
+        ? [
+          ...result.map(({ id }) => ({ type: 'Tag', id } as const)),
+          { type: 'Tag', id: 'LIST' },
+        ]
+        : [{ type: 'Tag', id: 'LIST' }]),
+    }),
     addTag: builder.mutation<Tag, Tag>({
       query: (tag) => ({
         url: '',
         method: 'POST',
         body: tag,
       }),
-      invalidatesTags: ['Tag'],
+      invalidatesTags: [{ type: 'Tag', id: 'LIST' }],
     }),
     updateTag: builder.mutation<Tag, Tag>({
       query: (tag) => ({
@@ -39,14 +50,14 @@ const tagApi = createApi({
         method: 'PATCH',
         body: tag,
       }),
-      invalidatesTags: ['Tag'],
+      invalidatesTags: (result, error, { id }) => [{ type: 'Tag', id }],
     }),
     deleteTag: builder.mutation<void, string>({
       query: (id) => ({
         url: `/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Tag'],
+      invalidatesTags: (result, error, id) => [{ type: 'Tag', id }],
     }),
   }),
 });

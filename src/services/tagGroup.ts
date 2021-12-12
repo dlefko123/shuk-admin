@@ -24,15 +24,27 @@ const tagGroupApi = createApi({
   }),
   tagTypes: ['Tag Group'],
   endpoints: (builder) => ({
-    getTagGroupById: builder.query<TagGroup, string>({ query: (id) => `/${id}` }),
-    getTagGroups: builder.query<TagGroup[], void>({ query: () => '' }),
+    getTagGroupById: builder.query<TagGroup, string>({
+      query: (id) => `/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Tag Group', id }],
+
+    }),
+    getTagGroups: builder.query<TagGroup[], void>({
+      query: () => '',
+      providesTags: (result) => (result
+        ? [
+          ...result.map(({ id }) => ({ type: 'Tag Group', id } as const)),
+          { type: 'Tag Group', id: 'LIST' },
+        ]
+        : [{ type: 'Tag Group', id: 'LIST' }]),
+    }),
     addTagGroup: builder.mutation<TagGroup, TagGroup>({
       query: (group) => ({
         url: '',
         method: 'POST',
         body: group,
       }),
-      invalidatesTags: ['Tag Group'],
+      invalidatesTags: [{ type: 'Tag Group', id: 'LIST' }],
     }),
     updateTagGroup: builder.mutation<TagGroup, TagGroup>({
       query: (group) => ({
@@ -40,14 +52,14 @@ const tagGroupApi = createApi({
         method: 'PATCH',
         body: group,
       }),
-      invalidatesTags: ['Tag Group'],
+      invalidatesTags: (result, error, { id }) => [{ type: 'Tag Group', id }],
     }),
     deleteTagGroup: builder.mutation<void, string>({
       query: (id) => ({
         url: `/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Tag Group'],
+      invalidatesTags: (result, error, id) => [{ type: 'Tag Group', id }],
     }),
   }),
 });

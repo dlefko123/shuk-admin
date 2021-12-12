@@ -17,15 +17,26 @@ const subcategoryApi = createApi({
   }),
   tagTypes: ['Subcategory'],
   endpoints: (builder) => ({
-    getSubcategory: builder.query<Category, string>({ query: (id) => `/${id}` }),
-    getSubcategories: builder.query<Category[], void>({ query: () => '' }),
+    getSubcategory: builder.query<Category, string>({
+      query: (id) => `/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Subcategory', id }],
+    }),
+    getSubcategories: builder.query<Category[], void>({
+      query: () => '',
+      providesTags: (result) => (result
+        ? [
+          ...result.map(({ id }) => ({ type: 'Subcategory', id } as const)),
+          { type: 'Subcategory', id: 'LIST' },
+        ]
+        : [{ type: 'Subcategory', id: 'LIST' }]),
+    }),
     addSubcategory: builder.mutation<Category, Category>({
       query: (subcategory) => ({
         url: '',
         method: 'POST',
         body: subcategory,
       }),
-      invalidatesTags: ['Subcategory'],
+      invalidatesTags: [{ type: 'Subcategory', id: 'LIST' }],
     }),
     updateSubategory: builder.mutation<Category, Category>({
       query: (subcategory) => ({
@@ -33,14 +44,14 @@ const subcategoryApi = createApi({
         method: 'PATCH',
         body: subcategory,
       }),
-      invalidatesTags: ['Subcategory'],
+      invalidatesTags: (result, error, { id }) => [{ type: 'Subcategory', id }],
     }),
     deleteSubcategory: builder.mutation<void, string>({
       query: (id) => ({
         url: `/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Subcategory'],
+      invalidatesTags: (result, error, id) => [{ type: 'Subcategory', id }],
     }),
   }),
 });

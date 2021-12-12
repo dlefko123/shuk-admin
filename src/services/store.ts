@@ -38,15 +38,26 @@ const storeApi = createApi({
   }),
   tagTypes: ['Store'],
   endpoints: (builder) => ({
-    getStoreById: builder.query<Store, string>({ query: (id) => `/${id}` }),
-    getStores: builder.query<Store[], void>({ query: () => '' }),
+    getStoreById: builder.query<Store, string>({
+      query: (id) => `/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Store', id }],
+    }),
+    getStores: builder.query<Store[], void>({
+      query: () => '',
+      providesTags: (result) => (result
+        ? [
+          ...result.map(({ id }) => ({ type: 'Store', id } as const)),
+          { type: 'Store', id: 'LIST' },
+        ]
+        : [{ type: 'Store', id: 'LIST' }]),
+    }),
     addStore: builder.mutation<Store, Store>({
       query: (store) => ({
         url: '',
         method: 'POST',
         body: store,
       }),
-      invalidatesTags: ['Store'],
+      invalidatesTags: [{ type: 'Store', id: 'LIST' }],
     }),
     updateStore: builder.mutation<Store, Store>({
       query: (store) => ({
@@ -54,14 +65,14 @@ const storeApi = createApi({
         method: 'PATCH',
         body: store,
       }),
-      invalidatesTags: ['Store'],
+      invalidatesTags: (result, error, { id }) => [{ type: 'Store', id }],
     }),
     deleteStore: builder.mutation<void, string>({
       query: (id) => ({
         url: `/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Store'],
+      invalidatesTags: (result, error, id) => [{ type: 'Store', id }],
     }),
   }),
 });

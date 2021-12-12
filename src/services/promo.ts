@@ -27,15 +27,26 @@ const promoApi = createApi({
   }),
   tagTypes: ['Promo'],
   endpoints: (builder) => ({
-    getPromoById: builder.query<Promo, string>({ query: (id) => `/${id}` }),
-    getPromos: builder.query<Promo[], void>({ query: () => '' }),
+    getPromoById: builder.query<Promo, string>({
+      query: (id) => `/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Promo', id }],
+    }),
+    getPromos: builder.query<Promo[], void>({
+      query: () => '',
+      providesTags: (result) => (result
+        ? [
+          ...result.map(({ id }) => ({ type: 'Promo', id } as const)),
+          { type: 'Promo', id: 'LIST' },
+        ]
+        : [{ type: 'Promo', id: 'LIST' }]),
+    }),
     addPromo: builder.mutation<Promo, Promo>({
       query: (promo) => ({
         url: '',
         method: 'POST',
         body: promo,
       }),
-      invalidatesTags: ['Promo'],
+      invalidatesTags: [{ type: 'Promo', id: 'LIST' }],
     }),
     updatePromo: builder.mutation<Promo, Promo>({
       query: (promo) => ({
@@ -43,14 +54,14 @@ const promoApi = createApi({
         method: 'PATCH',
         body: promo,
       }),
-      invalidatesTags: ['Promo'],
+      invalidatesTags: (result, error, { id }) => [{ type: 'Promo', id }],
     }),
     deletePromo: builder.mutation<void, string>({
       query: (id) => ({
         url: `/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Promo'],
+      invalidatesTags: (result, error, id) => [{ type: 'Promo', id }],
     }),
   }),
 });
