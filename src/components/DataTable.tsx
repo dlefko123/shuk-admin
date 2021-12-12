@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useMemo, useRef } from 'react';
@@ -79,6 +80,9 @@ const DataTable = ({ data, columns }: DataTableProps) => {
         return [Object.entries(value).map(([k, v]) => `${k}: ${v as string}`).join('\n')];
       }
       case 'string':
+        if (value.startsWith('http')) {
+          return [`<img src="${value}" class="table-img" alt="" />`];
+        }
         return [value];
       default:
         return [];
@@ -128,7 +132,7 @@ const DataTable = ({ data, columns }: DataTableProps) => {
             <div {...row.getRowProps()} className="table-row">
               {row.cells.map((cell) => (
                 <div {...cell.getCellProps()} className="table-cell">
-                  {cell.value ? renderCell(cell.value).map((val: string) => val.split('\n').map((line: string) => <p>{line}</p>))
+                  {cell.value ? renderCell(cell.value).map((val: string) => val.split('\n').map((line: string) => <p dangerouslySetInnerHTML={{ __html: line }} />))
                     .map((val: any) => <div className="cell-section">{val}</div>) : cell.render('Cell')}
                 </div>
               ))}
