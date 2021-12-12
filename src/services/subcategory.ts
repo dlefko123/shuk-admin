@@ -1,10 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { Category } from './category';
 
-export interface SubcategoryState {
-  subcategories: Category[];
-}
-
 const subcategoryApi = createApi({
   reducerPath: 'subcategory',
   baseQuery: fetchBaseQuery({ baseUrl: '/subcategories' }),

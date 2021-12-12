@@ -6,17 +6,23 @@ type ModelDetailProps = {
   model: Model;
 };
 
+const longColumns = [
+  'id',
+  'subcategories',
+  'url',
+];
+
 const ModelDetail = ({ model }: ModelDetailProps) => {
   const { name, getAll: useAllData } = model;
   const { data: apiAllData, isLoading, error } = useAllData();
 
-  const data = useMemo(() => apiAllData, [apiAllData]);
+  const data = useMemo(() => apiAllData || [], [apiAllData]);
   const columns = useMemo(() => {
-    const headerKeys = ['id', ...Object.keys(data ? data[0] : []).filter((s) => s !== 'id')];
+    const headerKeys = ['id', ...Object.keys(data && data.length > 0 ? data[0] : []).filter((s) => s !== 'id')];
     return headerKeys.map((key) => ({
       Header: key.replace(/[\W_]+/g, ' '),
       accessor: key,
-      width: (key.includes('id') || key.includes('subcategories')) ? 250 : 150,
+      width: (longColumns.some((str) => key.includes(str))) ? 300 : 150,
     }));
   }, [data]);
 

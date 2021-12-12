@@ -74,9 +74,9 @@ const DataTable = ({ data, columns }: DataTableProps) => {
     switch (typeof value) {
       case 'object': {
         if (Array.isArray(value)) {
-          return value.map(renderCell);
+          return value.map(renderCell).flat(2);
         }
-        return Object.entries(value).map(([k, v]) => `${k}: ${v as string}`).join('\n');
+        return [Object.entries(value).map(([k, v]) => `${k}: ${v as string}`).join('\n')];
       }
       case 'string':
         return [value];

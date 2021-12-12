@@ -7,10 +7,6 @@ export type Tag = {
   name_he: string;
 };
 
-export interface TagState {
-  tags: Tag[];
-}
-
 const tagApi = createApi({
   reducerPath: 'tag',
   baseQuery: fetchBaseQuery({ baseUrl: '/tags' }),

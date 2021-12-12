@@ -8,10 +8,6 @@ export type Category = {
   category_id?: string;
 };
 
-export interface CategoryState {
-  categories: Category[];
-}
-
 const categoryApi = createApi({
   reducerPath: 'category',
   baseQuery: fetchBaseQuery({ baseUrl: '/categories' }),
