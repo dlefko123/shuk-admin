@@ -1,6 +1,10 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/no-array-index-key */
-import { useEffect, useMemo, useRef } from 'react';
+import React, {
+  MutableRefObject, useEffect, useMemo, useRef,
+} from 'react';
 import {
   useTable, useResizeColumns, useFlexLayout, useRowSelect,
 } from 'react-table';
@@ -13,6 +17,23 @@ type DataTableProps = {
     accessor: string;
   }[];
 };
+
+const IndeterminateCheckbox = React.forwardRef(
+  ({ indeterminate, ...rest }: any, ref) => {
+    const defaultRef = React.useRef();
+    const resolvedRef = (ref || defaultRef) as MutableRefObject<any>;
+
+    React.useEffect(() => {
+      if (resolvedRef && resolvedRef?.current) {
+        resolvedRef.current.indeterminate = indeterminate;
+      }
+    }, [resolvedRef, indeterminate]);
+
+    return (
+      <input type="checkbox" ref={resolvedRef} {...rest} />
+    );
+  },
+);
 
 const DataTable = ({ data, columns }: DataTableProps) => {
   const headerRef = useRef<HTMLDivElement>(null);
@@ -37,6 +58,34 @@ const DataTable = ({ data, columns }: DataTableProps) => {
     useResizeColumns,
     useFlexLayout,
     useRowSelect,
+    (hooks) => {
+      hooks.allColumns.push((cols) => [
+        {
+          id: 'selection',
+          disableResizing: true,
+          minWidth: 35,
+          width: 35,
+          maxWidth: 35,
+          Header: ({ getToggleAllRowsSelectedProps }: any) => (
+            <div>
+              <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+            </div>
+          ),
+          Cell: ({ row }: any) => (
+            <div>
+              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+            </div>
+          ),
+        },
+        ...cols,
+      ]);
+      hooks.useInstanceBeforeDimensions.push(({ groups }: any) => {
+        if (groups && groups.length > 0 && groups[0].headers && groups[0].headers.length > 0) {
+          const selectionGroupHeader = groups[0].headers[0];
+          selectionGroupHeader.canResize = false;
+        }
+      });
+    },
   );
 
   const renderCell = (value: any) => {
@@ -97,8 +146,8 @@ const DataTable = ({ data, columns }: DataTableProps) => {
             <div {...row.getRowProps()} className="table-row">
               {row.cells.map((cell) => (
                 <div {...cell.getCellProps()} className="table-cell">
-                  {renderCell(cell.value).map((val: string) => val.split('\n').map((line: string) => <p>{line}</p>))
-                    .map((val: any) => <div className="cell-section">{val}</div>)}
+                  {cell.value ? renderCell(cell.value).map((val: string) => val.split('\n').map((line: string) => <p>{line}</p>))
+                    .map((val: any) => <div className="cell-section">{val}</div>) : cell.render('Cell')}
                 </div>
               ))}
             </div>
