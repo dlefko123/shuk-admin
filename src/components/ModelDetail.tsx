@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/no-array-index-key */
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import {
   useTable, useResizeColumns, useFlexLayout, useRowSelect,
 } from 'react-table';
@@ -15,11 +15,13 @@ type DataTableProps = {
 };
 
 const DataTable = ({ data, columns }: DataTableProps) => {
+  const headerRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+
   const defaultColumn = useMemo(
     () => ({
       minWidth: 30,
       width: 150,
-      maxWidth: 200,
     }),
     [],
   );
@@ -39,18 +41,37 @@ const DataTable = ({ data, columns }: DataTableProps) => {
 
   const renderCell = (value: any) => {
     switch (typeof value) {
-      case 'object':
-        return JSON.stringify(value);
+      case 'object': {
+        if (Array.isArray(value)) {
+          return value.map(renderCell);
+        }
+        return Object.entries(value).map(([k, v]) => `${k}: ${v as string}`).join('\n');
+      }
       case 'string':
-        return value;
+        return [value];
       default:
-        return null;
+        return [];
     }
   };
 
+  useEffect(() => {
+    if (headerRef.current && bodyRef.current) {
+      headerRef.current.onscroll = () => {
+        if (headerRef.current && bodyRef.current) {
+          bodyRef.current.scrollLeft = headerRef.current.scrollLeft;
+        }
+      };
+      bodyRef.current.onscroll = () => {
+        if (headerRef.current && bodyRef.current) {
+          headerRef.current.scrollLeft = bodyRef.current.scrollLeft;
+        }
+      };
+    }
+  }, []);
+
   return (
     <div {...getTableProps()} className="data-table">
-      <div>
+      <div className="data-table-head" ref={headerRef}>
         {headerGroups.map((headerGroup) => (
           <div {...headerGroup.getHeaderGroupProps()} className="table-row">
             {headerGroup.headers.map((column: any) => (
@@ -69,14 +90,15 @@ const DataTable = ({ data, columns }: DataTableProps) => {
           </div>
         ))}
       </div>
-      <div className="data-table-body">
+      <div className="data-table-body" ref={bodyRef}>
         {rows.map((row) => {
           prepareRow(row);
           return (
             <div {...row.getRowProps()} className="table-row">
               {row.cells.map((cell) => (
                 <div {...cell.getCellProps()} className="table-cell">
-                  {renderCell(cell.value)}
+                  {renderCell(cell.value).map((val: string) => val.split('\n').map((line: string) => <p>{line}</p>))
+                    .map((val: any) => <div className="cell-section">{val}</div>)}
                 </div>
               ))}
             </div>
@@ -101,6 +123,7 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
     return headerKeys.map((key) => ({
       Header: key.replace(/[\W_]+/g, ' '),
       accessor: key,
+      width: (key.includes('id') || key.includes('subcategories')) ? 250 : 150,
     }));
   }, [data]);
 
@@ -111,7 +134,7 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
       {error && !isLoading && <p>There was an error retrieving the requested data.</p>}
 
       {!isLoading && !error && (
-        <div className="row">
+        <div className="table-container">
           <DataTable data={data} columns={columns} />
         </div>
       )}
