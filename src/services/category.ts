@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { RootState } from '../store';
 
 export type Category = {
   id: string;
@@ -10,7 +11,17 @@ export type Category = {
 
 const categoryApi = createApi({
   reducerPath: 'category',
-  baseQuery: fetchBaseQuery({ baseUrl: '/categories' }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: '/categories',
+    prepareHeaders: (headers, { getState }) => {
+      const { token } = (getState() as RootState).auth;
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+
+      return headers;
+    },
+  }),
   tagTypes: ['Category'],
   endpoints: (builder) => ({
     getCategoryById: builder.query<Category, string>({ query: (id) => `/${id}` }),

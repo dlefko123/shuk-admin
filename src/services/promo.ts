@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { RootState } from '../store';
 
 export type Promo = {
   id: string;
@@ -13,7 +14,17 @@ export type Promo = {
 
 const promoApi = createApi({
   reducerPath: 'promo',
-  baseQuery: fetchBaseQuery({ baseUrl: '/promos' }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: '/promos',
+    prepareHeaders: (headers, { getState }) => {
+      const { token } = (getState() as RootState).auth;
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+
+      return headers;
+    },
+  }),
   tagTypes: ['Promo'],
   endpoints: (builder) => ({
     getPromoById: builder.query<Promo, string>({ query: (id) => `/${id}` }),

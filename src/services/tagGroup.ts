@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { RootState } from '../store';
 import { Tag } from './tag';
 
 export type TagGroup = {
@@ -10,7 +11,17 @@ export type TagGroup = {
 
 const tagGroupApi = createApi({
   reducerPath: 'tagGroup',
-  baseQuery: fetchBaseQuery({ baseUrl: '/tag-groups' }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: '/tag-groups',
+    prepareHeaders: (headers, { getState }) => {
+      const { token } = (getState() as RootState).auth;
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+
+      return headers;
+    },
+  }),
   tagTypes: ['Tag Group'],
   endpoints: (builder) => ({
     getTagGroupById: builder.query<TagGroup, string>({ query: (id) => `/${id}` }),
