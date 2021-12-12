@@ -10,6 +10,8 @@ const longColumns = [
   'id',
   'subcategories',
   'url',
+  'tags',
+  'promos',
 ];
 
 const ModelDetail = ({ model }: ModelDetailProps) => {

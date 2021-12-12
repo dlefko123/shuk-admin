@@ -77,7 +77,7 @@ const DataTable = ({ data, columns }: DataTableProps) => {
         if (Array.isArray(value)) {
           return value.map(renderCell).flat(2);
         }
-        return [Object.entries(value).map(([k, v]) => `${k}: ${v as string}`).join('\n')];
+        return [Object.entries(value).map(([k, v]) => `<span style="font-weight:bold;">${k}</span>: ${v as string}`).join('\n')];
       }
       case 'string':
         if (value.startsWith('http')) {
