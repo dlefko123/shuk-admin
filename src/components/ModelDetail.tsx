@@ -9,7 +9,7 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
   const { data, isLoading, error } = useAllData();
 
   const headerRow = ['id', ...Object.keys(data ? data[0] : []).filter(s => s !== 'id')];
-  const dataTable = data ? data.map((d: any) => headerRow.reduce((acc, curr: string) => acc.concat(d[curr]), [])) : [];
+  const dataTable = data ? headerRow.map((row: any) => data.reduce((acc: any[], curr: any) => acc.concat(curr[row]), [])) : [];
 
   return (
     <div className="model-detail">
@@ -20,13 +20,11 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
       {!isLoading && !error && (
         <>
         <div className="row">
-          {headerRow.map(row => (<div className="header-cell" key={row}>{row}</div>))}
+          {headerRow.map((row: string, i: number) => (<div className="col" key={row}>
+            <div className="header-cell">{row}</div>
+            {dataTable[i].map((cell: any, j: number) => typeof cell === 'string' ? (<div className="cell" key={cell}>{cell}</div>) : (<div className="cell" key={j} style={{visibility: 'hidden'}}>{j}</div>))}
+          </div>))}
         </div>
-        {dataTable.map(row => (
-          <div key={row[0]} className="row">
-            {row.map(cell => (<div key={cell} className="cell" >{typeof cell === 'string' ? cell : ''}</div>))}
-          </div>
-        ))}
         </>
       )}
     </div>

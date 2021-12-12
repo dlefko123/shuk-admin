@@ -15,7 +15,7 @@ export const checkIsTokenValid = createAsyncThunk(
   `auth/checkIsTokenValid`,
   async (_, thunkAPI) => {
     const token = (thunkAPI.getState() as RootState).auth.token;
-    const response = await fetch(`/5aef1e692/categories`, {
+    const response = await fetch(`/categories`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`
