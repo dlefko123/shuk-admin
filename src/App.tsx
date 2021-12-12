@@ -5,13 +5,11 @@ import './styles/global.scss';
 import ModelsPane from "./components/ModelsPane";
 import { Model } from "./lib/models";
 import ModelDetail from "./components/ModelDetail";
-import { useGetCategoriesQuery } from "./services/category";
 
 const App = () => {
   const dispatch = useAppDispatch();
   const { isAuthenticated, token } = useAppSelector((state) => state.auth);
   const [selectedModel, setSelectedModel] = useState<Model | undefined>(undefined);
-  const { data: categories, isLoading } = useGetCategoriesQuery();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);

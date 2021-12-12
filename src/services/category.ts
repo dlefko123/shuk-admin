@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { API_URL } from '../lib/constants';
 
 export type Category = {
   id: string;
@@ -15,14 +14,14 @@ export interface CategoryState {
 
 const categoryApi = createApi({
   reducerPath: 'category',
-  baseQuery: fetchBaseQuery({baseUrl: `${API_URL}/categories`}),
+  baseQuery: fetchBaseQuery({baseUrl: `/categories`}),
   tagTypes: ['Category'],
   endpoints: (builder) => ({
     getCategoryById: builder.query<Category, string>({ query: (id) => `/${id}` }),
-    getCategories: builder.query<Category[], void>({ query: () => '/' }),
+    getCategories: builder.query<Category[], void>({ query: () => '' }),
     addCategory: builder.mutation<Category, Category>({
       query: (category) => ({
-        url: '/',
+        url: '',
         method: 'POST',
         body: category,
       }),

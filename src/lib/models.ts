@@ -1,7 +1,7 @@
 
 import { useGetCategoriesQuery } from "../services/category";
 
-const defaultHook = () => { return { data: null, isLoading: false }; };
+const defaultHook = () => { return { data: null, isLoading: false, error: false }; };
 
 export const models = [
   { name: 'Category', value: 'categories', getAll: useGetCategoriesQuery },
