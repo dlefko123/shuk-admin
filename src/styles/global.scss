@@ -173,7 +173,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-start;
 }
 
@@ -184,7 +184,7 @@
   justify-content: flex-start;
   margin: 0px 20px 20px 20px;
 
-  h4 {
+  h4, label {
     margin: 0;
     margin-bottom: 10px;
     font-weight: 500;
@@ -200,6 +200,16 @@
   top: -20px;
   width: 100vw;
   text-align: right;
+}
+
+.image-upload {
+  cursor: pointer;
+  width: 200px;
+}
+
+.clear {
+  font-size: 14px;
+  padding: 0;
 }
 
 @media screen and (max-width: 768px) {
