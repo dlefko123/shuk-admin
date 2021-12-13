@@ -23,7 +23,7 @@ const ModelInterface = ({ existingInstance, modelName, columns }: ModelInterface
   const renderInput = (type: string, key: string) => {
     switch (type) {
       case 'string':
-        return <input type="text" value={instance[key]} onChange={(e) => setInstance((i) => ({ ...i, [key]: e.target.value }))} />;
+        return <input type="text" value={instance[key] || ''} onChange={(e) => setInstance((i) => ({ ...i, [key]: e.target.value }))} />;
       default:
         return null;
     }
@@ -31,7 +31,9 @@ const ModelInterface = ({ existingInstance, modelName, columns }: ModelInterface
 
   useEffect(() => {
     if (existingInstance) {
-      setInstance(existingInstance);
+      setInstance({ ...existingInstance });
+    } else {
+      setInstance({});
     }
   }, [existingInstance]);
 
