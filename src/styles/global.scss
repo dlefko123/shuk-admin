@@ -50,6 +50,12 @@
   margin-bottom: 30px;
 }
 
+.interface-header {
+  text-align: center;
+  margin: 30px 0;
+  color: rgba(0, 0, 0, 0.7);
+}
+
 .header-cell {
   font-weight: bold;
   text-transform: uppercase;
@@ -151,6 +157,7 @@
   background: rgba(0,0,0,0.1);
   padding: 7px 20px;
   border-radius: 10px;
+  margin-left: 5px;
 }
 
 @media screen and (max-width: 768px) {

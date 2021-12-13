@@ -5,6 +5,7 @@ import { Button, Modal } from 'react-bootstrap';
 import type { Model } from '../lib/models';
 import CustomModal from './CustomModal';
 import DataTable from './DataTable';
+import ModelInterface from './ModelInterface';
 
 type ModelDetailProps = {
   model: Model;
@@ -27,6 +28,8 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
   const [isDeleteModalShown, setIsDeleteModalShown] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingData, setEditingData] = useState<any>({});
 
   const data = useMemo(() => apiAllData || [], [apiAllData]);
   const columns = useMemo(() => {
@@ -41,6 +44,16 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
   const initiateDelete = () => {
     if (selectedId) {
       setIsDeleteModalShown(true);
+    }
+  };
+
+  const initiateEdit = () => {
+    if (selectedId && (!isEditing || editingData.id !== selectedId)) {
+      setIsEditing(true);
+      setEditingData(data.find((d) => d.id === selectedId));
+    } else if (isEditing) {
+      setIsEditing(false);
+      setEditingData({});
     }
   };
 
@@ -73,6 +86,7 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
         <h2 className="model-name">{name}</h2>
         <div className="action-buttons">
           <div className="error-text">{errorMessage}</div>
+          <button type="button" className="action-btn" onClick={initiateEdit}>Edit</button>
           <button type="button" className="action-btn" onClick={initiateDelete}>Delete</button>
         </div>
 
@@ -80,9 +94,12 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
         {getAllError && !isLoading && <p>There was an error retrieving the requested data.</p>}
 
         {!isLoading && !getAllError && (
-          <div className="table-container">
-            <DataTable data={data} columns={columns} onSelect={onSelect} />
-          </div>
+          <>
+            <div className="table-container">
+              <DataTable data={data} columns={columns} onSelect={onSelect} />
+            </div>
+            <ModelInterface modelName={name} existingInstance={isEditing ? editingData : undefined} />
+          </>
         )}
       </div>
       <CustomModal show={isDeleteModalShown} close={() => setIsDeleteModalShown(false)} title="Delete">
