@@ -38,6 +38,7 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
       Header: key.replace(/[\W_]+/g, ' '),
       accessor: key,
       width: (longColumns.some((str) => key.includes(str))) ? 300 : 150,
+      type: data && data.length > 0 ? typeof data[0][key] : '',
     }));
   }, [data]);
 
@@ -98,7 +99,7 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
             <div className="table-container">
               <DataTable data={data} columns={columns} onSelect={onSelect} />
             </div>
-            <ModelInterface modelName={name} existingInstance={isEditing ? editingData : undefined} />
+            <ModelInterface columns={columns} modelName={name} existingInstance={isEditing ? editingData : undefined} />
           </>
         )}
       </div>
