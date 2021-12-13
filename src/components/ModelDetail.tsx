@@ -20,7 +20,9 @@ const longColumns = [
 ];
 
 const ModelDetail = ({ model }: ModelDetailProps) => {
-  const { name, useGetAll, useDeleteById } = model;
+  const {
+    name, useGetAll, useDeleteById, type,
+  } = model;
   const { data: apiAllData, isLoading, error: getAllError } = useGetAll();
   const [deleteById, deleteResult] = useDeleteById();
   const [isDeleteModalShown, setIsDeleteModalShown] = useState(false);
@@ -31,13 +33,13 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
 
   const data = useMemo(() => apiAllData || [], [apiAllData]);
   const columns = useMemo(() => {
-    const headerKeys = ['id', ...Object.keys(data && data.length > 0 ? data[0] : []).filter((s) => s !== 'id')];
+    const headerKeys = ['id', ...Object.keys(data && data.length > 0 ? data[0] : type).filter((s) => s !== 'id')];
     return headerKeys.map((key) => ({
       Header: key.replace(/[\W_]+/g, ' '),
       accessor: key,
       width: (longColumns.some((str) => key.includes(str))) ? 300 : 150,
     }));
-  }, [data]);
+  }, [data, type]);
 
   const initiateDelete = () => {
     if (selectedId) {

@@ -29,12 +29,31 @@ const ModelInterface = ({ existingInstance, model, columns }: ModelInterfaceProp
   const { isLoading } = updateResult;
 
   const renderInput = (key: string) => {
-    switch (model.type[key]) {
-      case 'string':
-        return <input type="text" value={instance[key] || ''} onChange={(e) => setInstance((i) => ({ ...i, [key]: e.target.value }))} />;
-      default:
-        return null;
+    if (model.type[key] === 'string') {
+      return <input type="text" value={instance[key] || ''} onChange={(e) => setInstance((i) => ({ ...i, [key]: e.target.value }))} />;
     }
+    if (typeof model.type[key] === 'object') {
+      return (
+        <div>
+          {Object.keys(model.type[key]).map((subkey) => (
+            <div style={{ display: 'flex', flexDirection: 'row', margin: '5px 0' }} key={subkey}>
+              <p>{subkey}</p>
+              <input
+                type="text"
+                value={(instance[key] && instance[key][subkey] !== null && instance[key][subkey] !== undefined) ? instance[key][subkey] : ''}
+                onChange={(e) => setInstance((i) => ({ ...i, [key]: i[key] ? { ...i[key], [subkey]: e.target.value } : { [subkey]: e.target.value } }))}
+                style={{ marginLeft: '10px' }}
+              />
+            </div>
+          ))}
+        </div>
+      );
+    }
+    if (model.type[key] === 'boolean') {
+      return <input type="checkbox" checked={instance[key] || false} onChange={(e) => setInstance((i) => ({ ...i, [key]: e.target.checked }))} />;
+    }
+
+    return null;
   };
 
   const update = () => {

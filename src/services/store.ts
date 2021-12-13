@@ -33,7 +33,10 @@ export const storeType = {
   description_en: 'string',
   description_he: 'string',
   phone: 'string',
-  location: 'object',
+  location: {
+    latitude: 'string',
+    longitude: 'string',
+  },
   tags: 'array',
   promos: 'array',
   logo_url: 'string',

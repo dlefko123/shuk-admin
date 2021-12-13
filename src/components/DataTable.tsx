@@ -86,6 +86,8 @@ const DataTable = ({ data, columns, onSelect }: DataTableProps) => {
           return [`<img src="${value}" class="table-img" alt="" />`];
         }
         return [value];
+      case 'boolean':
+        return [value ? 'Yes' : 'No'];
       default:
         return [];
     }
@@ -134,7 +136,7 @@ const DataTable = ({ data, columns, onSelect }: DataTableProps) => {
             <div {...row.getRowProps()} className="table-row">
               {row.cells.map((cell) => (
                 <div {...cell.getCellProps()} className="table-cell">
-                  {cell.value ? renderCell(cell.value).map((val: string) => val.split('\n').map((line: string) => <p dangerouslySetInnerHTML={{ __html: line }} />))
+                  {(cell.value !== null && cell.value !== undefined) ? renderCell(cell.value).map((val: string) => val.split('\n').map((line: string) => <p dangerouslySetInnerHTML={{ __html: line }} />))
                     .map((val: any) => <div className="cell-section">{val}</div>) : cell.render('Cell')}
                 </div>
               ))}
