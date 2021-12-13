@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../store';
+import { ADMIN_PREFIX } from '../lib/constants';
 
 export interface AuthState {
   isAuthenticated: boolean;
@@ -16,7 +17,7 @@ export const checkIsTokenValid = createAsyncThunk(
   'auth/checkIsTokenValid',
   async (_, thunkAPI) => {
     const { token } = (thunkAPI.getState() as RootState).auth;
-    const response = await fetch('/categories', {
+    const response = await fetch(`/${ADMIN_PREFIX}/categories`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,

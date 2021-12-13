@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { RootState } from '../store';
+import { ADMIN_PREFIX } from '../lib/constants';
 
 export type Category = {
   id: string;
@@ -24,7 +25,7 @@ export const subcategoryType = {
 const categoryApi = createApi({
   reducerPath: 'category',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/categories',
+    baseUrl: `/${ADMIN_PREFIX}/categories`,
     prepareHeaders: (headers, { getState }) => {
       const { token } = (getState() as RootState).auth;
       if (token) {

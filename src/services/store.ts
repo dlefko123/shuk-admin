@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { RootState } from '../store';
 import { Promo } from './promo';
 import { Tag } from './tag';
+import { ADMIN_PREFIX } from '../lib/constants';
 
 export type Store = {
   id: string;
@@ -46,7 +47,7 @@ export const storeType = {
 const storeApi = createApi({
   reducerPath: 'store',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/stores',
+    baseUrl: `/${ADMIN_PREFIX}/stores`,
     prepareHeaders: (headers, { getState }) => {
       const { token } = (getState() as RootState).auth;
       if (token) {

@@ -97,5 +97,5 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "sass-loader": "^12.4.0"
   },
-  "proxy": "https://api.shukapp.com/5aef1e692"
+  "proxy": "https://api.shukapp.com"
 }
