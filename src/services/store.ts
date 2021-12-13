@@ -23,6 +23,23 @@ export type Store = {
   image_urls: string[];
 };
 
+export const storeType = {
+  id: 'string',
+  subcategory_id: 'string',
+  name_en: 'string',
+  name_he: 'string',
+  short_description_en: 'string',
+  short_description_he: 'string',
+  description_en: 'string',
+  description_he: 'string',
+  phone: 'string',
+  location: 'object',
+  tags: 'array',
+  promos: 'array',
+  logo_url: 'string',
+  image_urls: 'array',
+};
+
 const storeApi = createApi({
   reducerPath: 'store',
   baseQuery: fetchBaseQuery({

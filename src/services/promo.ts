@@ -12,6 +12,17 @@ export type Promo = {
   is_ad: boolean;
 };
 
+export const promoType = {
+  id: 'string',
+  store_id: 'string',
+  start_date: 'string',
+  end_date: 'string',
+  description_en: 'string',
+  description_he: 'string',
+  image_url: 'string',
+  is_ad: 'boolean',
+};
+
 const promoApi = createApi({
   reducerPath: 'promo',
   baseQuery: fetchBaseQuery({

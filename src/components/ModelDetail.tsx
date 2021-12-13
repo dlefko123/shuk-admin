@@ -36,7 +36,6 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
       Header: key.replace(/[\W_]+/g, ' '),
       accessor: key,
       width: (longColumns.some((str) => key.includes(str))) ? 300 : 150,
-      type: data && data.length > 0 ? typeof data[0][key] : '',
     }));
   }, [data]);
 

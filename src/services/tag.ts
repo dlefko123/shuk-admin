@@ -8,6 +8,13 @@ export type Tag = {
   name_he: string;
 };
 
+export const tagType = {
+  id: 'string',
+  tag_group_id: 'string',
+  name_en: 'string',
+  name_he: 'string',
+};
+
 const tagApi = createApi({
   reducerPath: 'tag',
   baseQuery: fetchBaseQuery({

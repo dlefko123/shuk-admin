@@ -9,6 +9,14 @@ export type Category = {
   category_id?: string;
 };
 
+export const categoryType = {
+  id: 'string',
+  name_en: 'string',
+  name_he: 'string',
+  subcategories: 'array',
+  category_id: 'string',
+};
+
 const categoryApi = createApi({
   reducerPath: 'category',
   baseQuery: fetchBaseQuery({

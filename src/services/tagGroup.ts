@@ -9,6 +9,13 @@ export type TagGroup = {
   name_he: string;
 };
 
+export const tagGroupType = {
+  id: 'string',
+  tags: 'array',
+  name_en: 'string',
+  name_he: 'string',
+};
+
 const tagGroupApi = createApi({
   reducerPath: 'tagGroup',
   baseQuery: fetchBaseQuery({

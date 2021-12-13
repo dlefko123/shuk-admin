@@ -18,7 +18,6 @@ type ModelInterfaceProps = {
   columns: {
     Header: string;
     accessor: string;
-    type: string;
   }[];
 };
 
@@ -29,8 +28,8 @@ const ModelInterface = ({ existingInstance, model, columns }: ModelInterfaceProp
   const [errorMessage, setErrorMessage] = useState('');
   const { isLoading } = updateResult;
 
-  const renderInput = (type: string, key: string) => {
-    switch (type) {
+  const renderInput = (key: string) => {
+    switch (model.type[key]) {
       case 'string':
         return <input type="text" value={instance[key] || ''} onChange={(e) => setInstance((i) => ({ ...i, [key]: e.target.value }))} />;
       default:
@@ -78,12 +77,15 @@ const ModelInterface = ({ existingInstance, model, columns }: ModelInterfaceProp
         {isLoading && <Spinner />}
         <button type="button" className="action-btn-small" onClick={update} disabled={isLoading}>Save</button>
       </div>
-      {columns.filter(({ accessor }) => accessor !== 'id').map(({ Header, type, accessor }) => (
-        <div className="model-input" key={accessor}>
-          <h4>{Header}</h4>
-          {renderInput(type, accessor)}
-        </div>
-      ))}
+
+      <div className="interface-body">
+        {columns.filter(({ accessor }) => accessor !== 'id').map(({ Header, accessor }) => (
+          <div className="model-input" key={accessor}>
+            <h4>{Header}</h4>
+            {renderInput(accessor)}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
