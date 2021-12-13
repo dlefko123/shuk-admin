@@ -23,7 +23,9 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
   const {
     name, useGetAll, useDeleteById, type,
   } = model;
-  const { data: apiAllData, isLoading, error: getAllError } = useGetAll();
+  const {
+    data: apiAllData, isLoading, error: getAllError, refetch,
+  } = useGetAll();
   const [deleteById, deleteResult] = useDeleteById();
   const [isDeleteModalShown, setIsDeleteModalShown] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -83,7 +85,8 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
   useEffect(() => {
     setIsEditing(false);
     setEditingData({});
-  }, [model]);
+    refetch();
+  }, [model, refetch]);
 
   return (
     <>

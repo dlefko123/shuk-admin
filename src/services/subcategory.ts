@@ -38,7 +38,7 @@ const subcategoryApi = createApi({
       }),
       invalidatesTags: [{ type: 'Subcategory', id: 'LIST' }],
     }),
-    updateSubategory: builder.mutation<Category, Category>({
+    updateSubcategory: builder.mutation<Category, Category>({
       query: (subcategory) => ({
         url: `/${subcategory.id}`,
         method: 'PATCH',
@@ -57,7 +57,7 @@ const subcategoryApi = createApi({
 });
 
 export const {
-  useAddSubcategoryMutation, useDeleteSubcategoryMutation, useGetSubcategoriesQuery, useGetSubcategoryQuery, useUpdateSubategoryMutation,
+  useAddSubcategoryMutation, useDeleteSubcategoryMutation, useGetSubcategoriesQuery, useGetSubcategoryQuery, useUpdateSubcategoryMutation,
 } = subcategoryApi;
 
 export default subcategoryApi;

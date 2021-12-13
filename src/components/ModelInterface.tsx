@@ -29,13 +29,17 @@ type ModelInterfaceProps = {
 const isValidFileInput = (fileInput: any) => (fileInput instanceof Array && (fileInput.length === 0 || fileInput[0] instanceof File || typeof fileInput[0] === 'string')) || fileInput instanceof File || typeof fileInput === 'string';
 
 const ModelInterface = ({ existingInstance, model, columns }: ModelInterfaceProps) => {
-  const { useUpdate } = model;
+  const { useUpdate, useAddOne } = model;
   const [updateById, updateResult] = useUpdate();
+  const [addOne, addResult] = useAddOne();
   const [instance, setInstance] = useState(existingInstance ?? {});
   const [errorMessage, setErrorMessage] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const { token } = useAppSelector((state) => state.auth);
-  const { isLoading } = updateResult;
+  const { isLoading: updateLoading } = updateResult;
+  const { isLoading: addLoading } = addResult;
+
+  const isLoading = updateLoading || addLoading;
 
   const renderInput = (key: string, header: string) => {
     if (model.type[key] === 'array' && key.includes('url')) {
@@ -98,46 +102,50 @@ const ModelInterface = ({ existingInstance, model, columns }: ModelInterfaceProp
   };
 
   const update = async () => {
-    if (existingInstance && (instance as ModelInstance).id) {
-      let isError = false;
-      Object.keys(instance).forEach((key) => {
-        if (instance[key] === '') {
-          setErrorMessage(`${key} is required`);
-          isError = true;
-        }
-      });
-      const instanceToUpdate = { ...instance };
+    let isError = false;
+    Object.keys(model.type).filter((v) => v !== 'id').forEach((key) => {
+      if (model.type[key] !== 'array' && model.type[key] !== 'boolean' && (!instance[key] || instance[key] === '')) {
+        setErrorMessage(`${key} is required`);
+        isError = true;
+      }
+    });
+    const instanceToUpdate = { ...instance };
 
-      setIsUploading(true);
-      await Promise.all(Object.entries(instanceToUpdate).map(async ([key, value]: [string, any]) => {
-        if (Array.isArray(value) && value.length > 0 && value[0] instanceof File) {
-          const urls = await Promise.all(value.map(async (file) => {
-            try {
-              const url = await uploadImage(file, token as string);
-              return url;
-            } catch (e: any) {
-              console.log(e);
-              setErrorMessage(e.message);
-              isError = true;
-            }
-          }));
-          instanceToUpdate[key] = urls;
-        } else if (value instanceof File) {
+    setIsUploading(true);
+    await Promise.all(Object.entries(instanceToUpdate).map(async ([key, value]: [string, any]) => {
+      if (Array.isArray(value) && value.length > 0 && value[0] instanceof File) {
+        const urls = await Promise.all(value.map(async (file) => {
           try {
-            const url = await uploadImage(value, token as string);
-            instanceToUpdate[key] = url;
+            const url = await uploadImage(file, token as string);
+            return url;
           } catch (e: any) {
             console.log(e);
             setErrorMessage(e.message);
             isError = true;
           }
+        }));
+        instanceToUpdate[key] = urls;
+      } else if (value instanceof File) {
+        try {
+          const url = await uploadImage(value, token as string);
+          instanceToUpdate[key] = url;
+        } catch (e: any) {
+          console.log(e);
+          setErrorMessage(e.message);
+          isError = true;
         }
-      }));
-      setIsUploading(false);
+      }
+    }));
+    setIsUploading(false);
 
-      if (!isError) {
-        setErrorMessage('');
+    if (!isError) {
+      setErrorMessage('');
+      if (existingInstance && (instance as ModelInstance).id) {
         updateById(instanceToUpdate as ModelInstance);
+      } else {
+        addOne(instanceToUpdate as ModelInstance).then((res) => {
+          if (!res.error) setInstance({});
+        });
       }
     }
   };
@@ -156,7 +164,13 @@ const ModelInterface = ({ existingInstance, model, columns }: ModelInterfaceProp
       console.error(error);
       setErrorMessage(`${error.status}: ${JSON.stringify(error.data)}`);
     }
-  }, [updateResult]);
+
+    if (addResult.isError && isFetchBaseQueryErrorType(addResult.error)) {
+      const { error } = addResult;
+      console.error(error);
+      setErrorMessage(`${error.status}: ${JSON.stringify(error.data)}`);
+    }
+  }, [updateResult, addResult]);
 
   return (
     <div className="model-interface">

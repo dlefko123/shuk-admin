@@ -14,6 +14,10 @@ export const categoryType = {
   name_en: 'string',
   name_he: 'string',
   subcategories: 'array',
+};
+
+export const subcategoryType = {
+  ...categoryType,
   category_id: 'string',
 };
 
