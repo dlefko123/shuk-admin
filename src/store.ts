@@ -6,6 +6,7 @@ import tagApi from './services/tag';
 import tagGroupApi from './services/tagGroup';
 import promoApi from './services/promo';
 import storeApi from './services/store';
+import shukInfoApi from './services/shukInfo';
 
 import { authReducer } from './features';
 
@@ -17,9 +18,10 @@ const store = configureStore({
     [tagGroupApi.reducerPath]: tagGroupApi.reducer,
     [promoApi.reducerPath]: promoApi.reducer,
     [storeApi.reducerPath]: storeApi.reducer,
+    [shukInfoApi.reducerPath]: shukInfoApi.reducer,
     auth: authReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat([categoryApi.middleware, subcategoryApi.middleware, tagApi.middleware, tagGroupApi.middleware, promoApi.middleware, storeApi.middleware]),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat([categoryApi.middleware, subcategoryApi.middleware, tagApi.middleware, tagGroupApi.middleware, promoApi.middleware, storeApi.middleware, shukInfoApi.middleware]),
 });
 
 export default store;
