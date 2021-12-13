@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
+import { isFetchBaseQueryErrorType } from '../lib/constants';
 import type { Model } from '../lib/models';
 import CustomModal from './CustomModal';
 import DataTable from './DataTable';
@@ -18,8 +18,6 @@ const longColumns = [
   'tags',
   'promos',
 ];
-
-const isFetchBaseQueryErrorType = (error: any): error is FetchBaseQueryError => 'status' in error;
 
 const ModelDetail = ({ model }: ModelDetailProps) => {
   const { name, useGetAll, useDeleteById } = model;
@@ -81,6 +79,11 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
     }
   }, [deleteResult]);
 
+  useEffect(() => {
+    setIsEditing(false);
+    setEditingData({});
+  }, [model]);
+
   return (
     <>
       <div className="model-detail">
@@ -99,7 +102,7 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
             <div className="table-container">
               <DataTable data={data} columns={columns} onSelect={onSelect} />
             </div>
-            <ModelInterface columns={columns} modelName={name} existingInstance={isEditing ? editingData : undefined} />
+            <ModelInterface columns={columns} model={model} existingInstance={isEditing ? editingData : undefined} />
           </>
         )}
       </div>
