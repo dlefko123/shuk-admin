@@ -11,7 +11,7 @@ type ModelDetailProps = {
   model: Model;
 };
 
-const longColumns = [
+const columnsToOmit = [
   'id',
   'subcategories',
   'url',
@@ -35,11 +35,10 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
 
   const data = useMemo(() => apiAllData || [], [apiAllData]);
   const columns = useMemo(() => {
-    const headerKeys = ['id', ...Object.keys(data && data.length > 0 ? data[0] : type).filter((s) => s !== 'id')];
+    const headerKeys = [...Object.keys(data && data.length > 0 ? data[0] : type).filter((s) => !columnsToOmit.includes(s) && !s.includes('url'))];
     return headerKeys.map((key) => ({
       Header: key.replace(/[\W_]+/g, ' '),
       accessor: key,
-      width: (longColumns.some((str) => key.includes(str))) ? 300 : 150,
     }));
   }, [data, type]);
 
