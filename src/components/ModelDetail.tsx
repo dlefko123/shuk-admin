@@ -77,6 +77,11 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
     onRefresh();
   }, [model, refetch, onRefresh]);
 
+  const setData = (d: any, setEditing: boolean) => {
+    setEditingData(d);
+    if (setEditing) setIsEditing(false);
+  };
+
   return (
     <>
       <div className="model-detail">
@@ -99,7 +104,13 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
         )}
 
         {!isLoading && !getAllError && isEditing && (
-          <ModelInterface setEditingData={setEditingData} columns={allColumns} model={model} existingInstance={editingData || undefined} onDeleteClick={() => setIsDeleteModalShown(true)} />
+          <ModelInterface
+            setEditingData={setData}
+            columns={allColumns}
+            model={model}
+            existingInstance={editingData || undefined}
+            onDeleteClick={() => setIsDeleteModalShown(true)}
+          />
         )}
       </div>
 

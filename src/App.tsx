@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from './store';
 import { checkIsTokenValid, setToken } from './features/auth';
 import './styles/global.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-datepicker/dist/react-datepicker.css';
 import ModelsPane from './components/ModelsPane';
 import { Model } from './lib/models';
 import ModelDetail from './components/ModelDetail';

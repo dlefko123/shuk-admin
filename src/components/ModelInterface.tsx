@@ -23,7 +23,7 @@ type ModelInterfaceProps = {
   model: Model;
   columns: string[];
   onDeleteClick: () => void;
-  setEditingData: (data: any) => void;
+  setEditingData: (data: any, setEditing: boolean) => void;
 };
 
 const ModelInterface = ({
@@ -53,6 +53,14 @@ const ModelInterface = ({
       }
     });
     const instanceToUpdate = { ...instance };
+
+    // Convert dates to ISO format.
+    Object.entries(instanceToUpdate).forEach(([key, value]) => {
+      if (value instanceof Date) {
+        // eslint-disable-next-line prefer-destructuring
+        instanceToUpdate[key] = value.toISOString().split('T')[0];
+      }
+    });
 
     // Start the image upload process.
     // Upload each of the images and replace the Files with URls to the newly uploaded images.
@@ -88,9 +96,10 @@ const ModelInterface = ({
       setErrorMessage('');
       if (existingInstance && (instance as ModelInstance).id) {
         updateById(instanceToUpdate as ModelInstance);
+        setEditingData(instanceToUpdate, false);
       } else {
-        addOne(instanceToUpdate as ModelInstance).unwrap().then((res) => {
-          setEditingData(res);
+        addOne(instanceToUpdate as ModelInstance).unwrap().then(() => {
+          setEditingData(instanceToUpdate, true);
         });
       }
     }

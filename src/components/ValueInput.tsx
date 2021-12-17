@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import DatePicker from 'react-datepicker';
 import ImageUpload from './ImageUpload';
 import { Model, models } from '../lib/models';
 import { useAppDispatch, useAppSelector } from '../store';
@@ -61,6 +62,14 @@ const ValueInput = ({
           <option key={item.id} value={item.id}>{item.name_en}</option>
         ))}
       </select>
+    );
+  }
+  if (model.type[key] === 'string' && key.includes('date')) {
+    const d = new Date(instance[key]);
+    d.setHours(24);
+
+    return (
+      <DatePicker selected={typeof instance[key] === 'string' ? d : instance[key]} onChange={(v) => setInstance((i) => ({ ...i, [key]: v }))} />
     );
   }
   if (model.type[key] === 'string') {
