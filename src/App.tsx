@@ -14,6 +14,7 @@ const App = () => {
   const { isAuthenticated, token } = useAppSelector((state) => state.auth);
   const [selectedModel, setSelectedModel] = useState<Model | undefined>(undefined);
   const [isShukInfoShown, setIsShukInfoShown] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   useEffect(() => {
     const hashParams = window.location.hash.substr(1).split('&').map((param) => param.split('=')).flat(2);
@@ -23,6 +24,8 @@ const App = () => {
     } else if (localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY)) {
       dispatch(setToken(localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY) as string));
     }
+
+    setTimeout(() => setHasLoaded(true), 1000);
   }, [dispatch]);
 
   useEffect(() => {
@@ -46,14 +49,14 @@ const App = () => {
   return (
     <div className="App">
       <h1 className="welcome-header">Welcome to the Shuk Admin API</h1>
-      {isAuthenticated && (
+      {isAuthenticated && hasLoaded && (
         <main>
           <ModelsPane selectModel={selectModel} />
           {selectedModel && <ModelDetail model={selectedModel} />}
           {isShukInfoShown && <ShukInfo />}
         </main>
       )}
-      {!isAuthenticated && (
+      {!isAuthenticated && hasLoaded && (
         <main>
           <a className="login-link" href={`/${ADMIN_PREFIX}/admin/login`}>Login</a>
         </main>
