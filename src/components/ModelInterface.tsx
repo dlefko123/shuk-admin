@@ -44,6 +44,8 @@ const ModelInterface = ({
 
   const update = async () => {
     let isError = false;
+
+    // Check for all required fields.
     Object.keys(model.type).filter((v) => v !== 'id').forEach((key) => {
       if (model.type[key] !== 'array' && model.type[key] !== 'boolean' && (!instance[key] || instance[key] === '')) {
         setErrorMessage(`${key} is required`);
@@ -52,6 +54,8 @@ const ModelInterface = ({
     });
     const instanceToUpdate = { ...instance };
 
+    // Start the image upload process.
+    // Upload each of the images and replace the Files with URls to the newly uploaded images.
     setIsUploading(true);
     await Promise.all(Object.entries(instanceToUpdate).map(async ([key, value]: [string, any]) => {
       if (Array.isArray(value) && value.length > 0 && value[0] instanceof File) {
@@ -79,6 +83,7 @@ const ModelInterface = ({
     }));
     setIsUploading(false);
 
+    // Finally, update the database.
     if (!isError) {
       setErrorMessage('');
       if (existingInstance && (instance as ModelInstance).id) {

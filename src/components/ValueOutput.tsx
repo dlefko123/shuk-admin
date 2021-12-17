@@ -6,7 +6,7 @@ const ValueOutput = ({ value }: { value: any }) => {
         if (Array.isArray(val)) {
           return val.map(renderCell).flat(2);
         }
-        return [Object.entries(val).map(([k, v]) => `<span style="font-weight:bold;">${k}</span>: ${v as string}`).join('\n')];
+        return [Object.entries(val).filter(([k]) => !k.includes('id') && !k.includes('url')).map(([k, v]) => `<span style="font-weight:bold;">${k}</span>: ${v as string}`).join('\n')];
       }
       case 'string':
         if (val.startsWith('http')) {

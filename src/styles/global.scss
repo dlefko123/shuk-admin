@@ -84,6 +84,9 @@ input[type="text"] {
   &:last-child {
     margin-bottom: 0;
   }
+  img {
+    max-width: 300px;
+  }
 }
 
 .table-container {
@@ -194,6 +197,7 @@ input[type="text"] {
   align-items: flex-start;
   justify-content: flex-start;
   margin: 0px 20px 20px 20px;
+  min-width: 100px;
 
   h4, label {
     margin: 0;
