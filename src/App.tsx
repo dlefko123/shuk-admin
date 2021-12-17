@@ -7,7 +7,7 @@ import ModelsPane from './components/ModelsPane';
 import { Model } from './lib/models';
 import ModelDetail from './components/ModelDetail';
 import ShukInfo from './components/ShukInfo';
-import { ADMIN_PREFIX } from './lib/constants';
+import { ADMIN_PREFIX, LOCAL_STORAGE_TOKEN_KEY } from './lib/constants';
 
 const App = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +20,8 @@ const App = () => {
 
     if (hashParams && hashParams.length > 0 && hashParams[0] === 'access_token') {
       dispatch(setToken(hashParams[1]));
+    } else if (localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY)) {
+      dispatch(setToken(localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY) as string));
     }
   }, [dispatch]);
 

@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../store';
-import { ADMIN_PREFIX } from '../lib/constants';
+import { ADMIN_PREFIX, LOCAL_STORAGE_TOKEN_KEY } from '../lib/constants';
 
 export interface AuthState {
   isAuthenticated: boolean;
@@ -40,6 +40,7 @@ export const authSlice = createSlice({
     },
     setToken: (state, action: PayloadAction<string | null>) => {
       state.token = action.payload;
+      localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, action.payload as string);
     },
   },
   extraReducers: (builder) => {
