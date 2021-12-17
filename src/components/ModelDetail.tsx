@@ -43,6 +43,7 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
       accessor: key,
     }));
   }, [data, type]);
+  const allColumns = useMemo(() => [...Object.keys(data && data.length > 0 ? data[0] : type)], [data, type]);
 
   const deleteItem = () => {
     if (editingData && editingData.id) {
@@ -97,7 +98,7 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
         )}
 
         {!isLoading && !getAllError && isEditing && (
-          <ModelInterface columns={columns} model={model} existingInstance={editingData || undefined} />
+          <ModelInterface columns={allColumns} model={model} existingInstance={editingData || undefined} />
         )}
       </div>
 
