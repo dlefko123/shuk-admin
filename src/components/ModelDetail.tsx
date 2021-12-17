@@ -28,10 +28,9 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
   } = useGetAll();
   const [deleteById, deleteResult] = useDeleteById();
   const [isDeleteModalShown, setIsDeleteModalShown] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [editingData, setEditingData] = useState<any>({});
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const data = useMemo(() => apiAllData || [], [apiAllData]);
   const columns = useMemo(() => {
@@ -42,22 +41,6 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
     }));
   }, [data, type]);
 
-  const initiateDelete = () => {
-    if (selectedId) {
-      setIsDeleteModalShown(true);
-    }
-  };
-
-  const initiateEdit = () => {
-    if (selectedId && (!isEditing || editingData.id !== selectedId)) {
-      setIsEditing(true);
-      setEditingData(data.find((d) => d.id === selectedId));
-    } else if (isEditing) {
-      setIsEditing(false);
-      setEditingData({});
-    }
-  };
-
   const deleteItem = () => {
     if (selectedId) {
       deleteById(selectedId);
@@ -65,12 +48,9 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
     }
   };
 
-  const onSelect = (id: string, selected: boolean) => {
-    if (!selected) {
-      setSelectedId(null);
-    } else {
-      setSelectedId(id);
-    }
+  const onSelect = (id: string) => {
+    setSelectedId(id);
+    setEditingData(data.find((d) => d.id === id));
   };
 
   useEffect(() => {
@@ -82,7 +62,6 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
   }, [deleteResult]);
 
   useEffect(() => {
-    setIsEditing(false);
     setEditingData({});
     refetch();
   }, [model, refetch]);
@@ -91,24 +70,26 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
     <>
       <div className="model-detail">
         <h2 className="model-name">{name}</h2>
-        <div className="action-buttons">
-          <div className="error-text">{errorMessage}</div>
-          <button type="button" className="action-btn" onClick={initiateEdit}>Edit</button>
-          <button type="button" className="action-btn" onClick={initiateDelete}>Delete</button>
-        </div>
 
         {isLoading && <p>Loading...</p>}
         {getAllError && !isLoading && <p>There was an error retrieving the requested data.</p>}
 
-        {!isLoading && !getAllError && (
+        {!isLoading && !getAllError && !selectedId && (
           <>
+            <div className="action-buttons">
+              <div className="error-text">{errorMessage}</div>
+              <button type="button" className="action-btn">{`Add ${name}`}</button>
+            </div>
             <div className="table-container">
               <DataTable data={data} columns={columns} onSelect={onSelect} />
             </div>
-            <ModelInterface columns={columns} model={model} existingInstance={isEditing ? editingData : undefined} />
           </>
         )}
+        {!isLoading && !getAllError && selectedId && (
+          <ModelInterface columns={columns} model={model} existingInstance={selectedId ? editingData : undefined} />
+        ) }
       </div>
+
       <CustomModal show={isDeleteModalShown} close={() => setIsDeleteModalShown(false)} title="Delete">
         <p>Are you sure you want to delete this entry?</p>
         <Modal.Footer>

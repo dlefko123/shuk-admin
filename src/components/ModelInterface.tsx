@@ -173,22 +173,22 @@ const ModelInterface = ({ existingInstance, model, columns }: ModelInterfaceProp
   }, [updateResult, addResult]);
 
   return (
-    <div className="model-interface">
-      <h2 className="interface-header">{!existingInstance ? `Add ${model.name}` : `Editing ${existingInstance.id}`}</h2>
+    <>
       <div className="action-buttons">
         <div className="error-text">{errorMessage}</div>
         {(isLoading || isUploading) && <Spinner />}
         <button type="button" className="action-btn-small" onClick={update} disabled={isLoading || isUploading}>Save</button>
       </div>
-
-      <div className="interface-body">
-        {columns.filter(({ accessor }) => accessor !== 'id').map(({ Header, accessor }) => (
-          <div className="model-input" key={accessor}>
-            {renderInput(accessor, Header)}
-          </div>
-        ))}
+      <div className="model-interface">
+        <div className="interface-body">
+          {columns.filter(({ accessor }) => accessor !== 'id').map(({ Header, accessor }) => (
+            <div className="model-input" key={accessor}>
+              {renderInput(accessor, Header)}
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
