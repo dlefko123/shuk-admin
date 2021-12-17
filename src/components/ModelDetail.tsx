@@ -50,6 +50,7 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
       deleteById(editingData.id);
       setIsDeleteModalShown(false);
       setIsEditing(false);
+      setEditingData({});
     }
   };
 
@@ -98,7 +99,7 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
         )}
 
         {!isLoading && !getAllError && isEditing && (
-          <ModelInterface columns={allColumns} model={model} existingInstance={editingData || undefined} />
+          <ModelInterface setEditingData={setEditingData} columns={allColumns} model={model} existingInstance={editingData || undefined} onDeleteClick={() => setIsDeleteModalShown(true)} />
         )}
       </div>
 

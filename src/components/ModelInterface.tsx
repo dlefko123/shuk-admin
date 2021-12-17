@@ -1,5 +1,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-console */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from 'react';
 import { Spinner } from 'react-activity';
 import 'react-activity/dist/Spinner.css';
@@ -13,6 +14,7 @@ import { TagGroup } from '../services/tagGroup';
 import { uploadImage } from '../services/upload';
 import { useAppSelector } from '../store';
 import ValueInput from './ValueInput';
+import ValueOutput from './ValueOutput';
 
 type ModelInstance = Category & Promo & Store & Tag & TagGroup;
 
@@ -20,15 +22,20 @@ type ModelInterfaceProps = {
   existingInstance?: ModelInstance;
   model: Model;
   columns: string[];
+  onDeleteClick: () => void;
+  setEditingData: (data: any) => void;
 };
 
-const ModelInterface = ({ existingInstance, model, columns }: ModelInterfaceProps) => {
+const ModelInterface = ({
+  existingInstance, model, columns, onDeleteClick, setEditingData,
+}: ModelInterfaceProps) => {
   const { useUpdate, useAddOne } = model;
   const [updateById, updateResult] = useUpdate();
   const [addOne, addResult] = useAddOne();
-  const [instance, setInstance] = useState(existingInstance ?? {});
+  const [instance, setInstance] = useState<any>(existingInstance ?? {});
   const [errorMessage, setErrorMessage] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const { token } = useAppSelector((state) => state.auth);
   const { isLoading: updateLoading } = updateResult;
   const { isLoading: addLoading } = addResult;
@@ -77,11 +84,13 @@ const ModelInterface = ({ existingInstance, model, columns }: ModelInterfaceProp
       if (existingInstance && (instance as ModelInstance).id) {
         updateById(instanceToUpdate as ModelInstance);
       } else {
-        addOne(instanceToUpdate as ModelInstance).then((res) => {
-          if (!res.error) setInstance({});
+        addOne(instanceToUpdate as ModelInstance).unwrap().then((res) => {
+          setEditingData(res);
         });
       }
     }
+
+    setIsEditing(false);
   };
 
   useEffect(() => {
@@ -106,24 +115,31 @@ const ModelInterface = ({ existingInstance, model, columns }: ModelInterfaceProp
     }
   }, [updateResult, addResult]);
 
+  const displayInputs = isEditing || !instance.id;
+
   return (
     <>
       <div className="action-buttons">
         <div className="error-text">{errorMessage}</div>
         {(isLoading || isUploading) && <Spinner />}
-        <button type="button" className="action-btn-small" onClick={update} disabled={isLoading || isUploading}>Save</button>
+        {existingInstance && <button type="button" className="action-btn-small" onClick={onDeleteClick} disabled={isLoading || isUploading}>Delete</button>}
+        <button type="button" className="action-btn-small" onClick={displayInputs ? update : () => setIsEditing(true)} disabled={isLoading || isUploading}>{displayInputs ? 'Save' : 'Edit'}</button>
       </div>
+
       <div className="model-interface">
         <div className="interface-body">
           {columns.filter((accessor) => accessor !== 'id').map((accessor) => (
             <div className="model-input" key={accessor}>
-              <ValueInput
-                accessor={accessor}
-                header={accessor.replace(/[\W_]+/g, ' ')}
-                model={model}
-                instance={instance}
-                setInstance={setInstance}
-              />
+              <label>{accessor.replace(/[\W_]+/g, ' ')}</label>
+              {displayInputs ? (
+                <ValueInput
+                  accessor={accessor}
+                  header={accessor.replace(/[\W_]+/g, ' ')}
+                  model={model}
+                  instance={instance}
+                  setInstance={setInstance}
+                />
+              ) : (<ValueOutput value={instance[accessor]} />)}
             </div>
           ))}
         </div>
