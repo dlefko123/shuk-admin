@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import ImageUpload from './ImageUpload';
-import { Model } from '../lib/models';
+import { Model, models } from '../lib/models';
+import { useAppDispatch, useAppSelector } from '../store';
 
 type ValueInputProps = {
   accessor: string;
@@ -14,6 +16,18 @@ const isValidFileInput = (fileInput: any) => (fileInput instanceof Array && (fil
 const ValueInput = ({
   accessor: key, header, model, instance, setInstance,
 }: ValueInputProps) => {
+  const dispatch = useAppDispatch();
+  const state = useAppSelector((s) => s);
+
+  useEffect(() => {
+    const modelName = key.split('_').slice(0, -1).join(' ');
+    const modelParent = models.find((m) => m.name.toLowerCase() === modelName);
+
+    if (modelParent) {
+      dispatch((modelParent.getAll as any).initiate());
+    }
+  }, [key, dispatch]);
+
   if (model.type[key] === 'array' && key.includes('url')) {
     return (
       <div>
@@ -32,6 +46,21 @@ const ValueInput = ({
           files={isValidFileInput(instance[key]) ? instance[key] : []}
         />
       </div>
+    );
+  }
+  if (model.type[key] === 'string' && key.includes('id')) {
+    const modelName = key.split('_').slice(0, -1).join(' ');
+    const modelParent = models.find((m) => m.name.toLowerCase() === modelName);
+    if (!modelParent) return null;
+
+    const { data } = (modelParent.getAll as any).select()(state);
+
+    return (
+      <select onChange={(e) => setInstance((i) => ({ ...i, [key]: e.target.value }))} value={instance[key]}>
+        {data && data.map((item) => (
+          <option key={item.id} value={item.id}>{item.name_en}</option>
+        ))}
+      </select>
     );
   }
   if (model.type[key] === 'string') {

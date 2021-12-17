@@ -22,8 +22,8 @@ const ValueOutput = ({ value }: { value: any }) => {
 
   return (
     <div className="value">
-      {renderCell(value).map((val: string) => val.split('\n').map((line: string) => <p dangerouslySetInnerHTML={{ __html: line }} />))
-        .map((val: any) => <div className="cell-section">{val}</div>)}
+      {renderCell(value).map((val: string) => val.split('\n').map((line: string) => <p key={line} dangerouslySetInnerHTML={{ __html: line }} />))
+        .map((val: any) => <div key={val.toString()} className="cell-section">{val}</div>)}
     </div>
   );
 };
