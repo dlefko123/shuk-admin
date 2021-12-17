@@ -31,6 +31,13 @@ const ShukInfo = () => {
     }
   }, [getError, updateError]);
 
+  useEffect(() => {
+    if (data) {
+      setDescriptionEn(data.description_en);
+      setDescriptionHe(data.description_he);
+    }
+  }, [data]);
+
   const update = () => {
     updateInfo({
       description_en: descriptionEn,
