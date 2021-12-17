@@ -3,6 +3,8 @@ import DatePicker from 'react-datepicker';
 import ImageUpload from './ImageUpload';
 import { Model, models } from '../lib/models';
 import { useAppDispatch, useAppSelector } from '../store';
+import { useGetTagsQuery } from '../services/tag';
+import { useAddTagMutation, useDeleteTagMutation } from '../services/store';
 
 type ValueInputProps = {
   accessor: string;
@@ -19,6 +21,10 @@ const ValueInput = ({
 }: ValueInputProps) => {
   const dispatch = useAppDispatch();
   const state = useAppSelector((s) => s);
+  const [addTag] = useAddTagMutation({ fixedCacheKey: 'addTag' });
+  const [removeTag] = useDeleteTagMutation({ fixedCacheKey: 'removeTag' });
+  const { data: tags } = useGetTagsQuery();
+  const { data: allData } = (model.getAll as any).select()(state);
 
   useEffect(() => {
     const modelName = key.split('_').slice(0, -1).join(' ');
@@ -28,6 +34,15 @@ const ValueInput = ({
       dispatch((modelParent.getAll as any).initiate());
     }
   }, [key, dispatch]);
+
+  useEffect(() => {
+    if (allData) {
+      const apiData = allData.find((d) => d.id === instance.id);
+      if (apiData && apiData.tags) {
+        setInstance((prevState) => ({ ...prevState, tags: apiData.tags }));
+      }
+    }
+  }, [allData, instance, setInstance]);
 
   if (model.type[key] === 'array' && key.includes('url')) {
     return (
@@ -97,6 +112,25 @@ const ValueInput = ({
   if (model.type[key] === 'boolean') {
     return (
       <input type="checkbox" name={header} checked={instance[key] || false} onChange={(e) => setInstance((i) => ({ ...i, [key]: e.target.checked }))} />
+    );
+  }
+  if (key === 'tags') {
+    return (
+      <div>
+        <select onChange={(e) => addTag({ store_id: instance.id, tag_id: e.target.value })}>
+          {tags && tags.map((tag) => (
+            <option key={tag.id} value={tag.id}>{tag.name_en}</option>
+          ))}
+        </select>
+        <div>
+          {instance.tags && instance.tags.map((tag) => (
+            <div key={tag.id} className="tag-item">
+              <div>{tag.name_en}</div>
+              <button type="button" onClick={() => removeTag({ store_id: instance.id, tag_id: tag.id })}>X</button>
+            </div>
+          ))}
+        </div>
+      </div>
     );
   }
   return null;

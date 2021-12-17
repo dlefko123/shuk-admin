@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable consistent-return */
 /* eslint-disable no-console */
 /* eslint-disable jsx-a11y/label-has-associated-control */
@@ -8,8 +9,8 @@ import { isFetchBaseQueryErrorType } from '../lib/constants';
 import { Model } from '../lib/models';
 import { Category } from '../services/category';
 import { Promo } from '../services/promo';
-import { Store } from '../services/store';
-import { Tag } from '../services/tag';
+import { Store, useAddTagMutation, useGetStoresQuery } from '../services/store';
+import { Tag, useDeleteTagMutation } from '../services/tag';
 import { TagGroup } from '../services/tagGroup';
 import { uploadImage } from '../services/upload';
 import { useAppSelector } from '../store';
@@ -26,12 +27,20 @@ type ModelInterfaceProps = {
   setEditingData: (data: any, setEditing: boolean) => void;
 };
 
+const excludeLabels = [
+  'promos',
+  'subcategories',
+];
+
 const ModelInterface = ({
   existingInstance, model, columns, onDeleteClick, setEditingData,
 }: ModelInterfaceProps) => {
-  const { useUpdate, useAddOne } = model;
+  const { useUpdate, useAddOne, useGetAll } = model;
   const [updateById, updateResult] = useUpdate();
   const [addOne, addResult] = useAddOne();
+  const { refetch } = useGetAll();
+  const [a, addTagResult] = useAddTagMutation({ fixedCacheKey: 'addTag' });
+  const [b, removeTagResult] = useDeleteTagMutation({ fixedCacheKey: 'removeTag' });
   const [instance, setInstance] = useState<any>(existingInstance ?? {});
   const [errorMessage, setErrorMessage] = useState('');
   const [isUploading, setIsUploading] = useState(false);
@@ -39,8 +48,10 @@ const ModelInterface = ({
   const { token } = useAppSelector((state) => state.auth);
   const { isLoading: updateLoading } = updateResult;
   const { isLoading: addLoading } = addResult;
+  const { isLoading: addTagLoading } = addTagResult;
+  const { isLoading: removeTagLoading } = removeTagResult;
 
-  const isLoading = updateLoading || addLoading;
+  const isLoading = updateLoading || addLoading || addTagLoading || removeTagLoading;
 
   const update = async () => {
     let isError = false;
@@ -97,6 +108,7 @@ const ModelInterface = ({
       if (existingInstance && (instance as ModelInstance).id) {
         updateById(instanceToUpdate as ModelInstance);
         setEditingData(instanceToUpdate, false);
+        refetch();
       } else {
         addOne(instanceToUpdate as ModelInstance).unwrap().then(() => {
           setEditingData(instanceToUpdate, true);
@@ -144,8 +156,8 @@ const ModelInterface = ({
         <div className="interface-body">
           {columns.filter((accessor) => accessor !== 'id').map((accessor) => (
             <div className="model-input" key={accessor}>
-              <label>{accessor.replace(/[\W_]+/g, ' ')}</label>
-              {displayInputs ? (
+              {(!excludeLabels.includes(accessor.toLowerCase()) || !displayInputs) && <label>{accessor.replace(/[\W_]+/g, ' ')}</label>}
+              {displayInputs && !(accessor === 'tags' && model.value !== 'stores') ? (
                 <ValueInput
                   accessor={accessor}
                   header={accessor.replace(/[\W_]+/g, ' ')}

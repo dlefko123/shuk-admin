@@ -245,6 +245,18 @@ input[type="text"] {
   transition: 0.2s all;
 }
 
+.tag-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 5px 0;
+
+  button {
+    font-weight: 700;
+  }
+}
+
 @media screen and (max-width: 768px) {
   .models-pane {
     flex-direction: row;
