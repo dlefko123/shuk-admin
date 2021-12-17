@@ -1,5 +1,8 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-console */
-import { useEffect, useMemo, useState } from 'react';
+import {
+  useEffect, useMemo, useState, useCallback,
+} from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { isFetchBaseQueryErrorType } from '../lib/constants';
 import type { Model } from '../lib/models';
@@ -30,7 +33,7 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
   const [isDeleteModalShown, setIsDeleteModalShown] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [editingData, setEditingData] = useState<any>({});
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const data = useMemo(() => apiAllData || [], [apiAllData]);
   const columns = useMemo(() => {
@@ -42,16 +45,23 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
   }, [data, type]);
 
   const deleteItem = () => {
-    if (selectedId) {
-      deleteById(selectedId);
+    if (editingData && editingData.id) {
+      deleteById(editingData.id);
       setIsDeleteModalShown(false);
+      setIsEditing(false);
     }
   };
 
   const onSelect = (id: string) => {
-    setSelectedId(id);
     setEditingData(data.find((d) => d.id === id));
+    setIsEditing(true);
   };
+
+  const onRefresh = useCallback(() => {
+    setEditingData({});
+    setIsEditing(false);
+    refetch();
+  }, [refetch]);
 
   useEffect(() => {
     if (deleteResult.isError && isFetchBaseQueryErrorType(deleteResult.error)) {
@@ -62,32 +72,33 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
   }, [deleteResult]);
 
   useEffect(() => {
-    setEditingData({});
-    refetch();
-  }, [model, refetch]);
+    onRefresh();
+  }, [model, refetch, onRefresh]);
 
   return (
     <>
       <div className="model-detail">
-        <h2 className="model-name">{name}</h2>
+        {isEditing && (<button type="button" onClick={onRefresh} className="back-button">{'< Back'}</button>)}
+        <h2 className="model-name">{`${isEditing ? (editingData && editingData.id ? 'Edit ' : 'Add ') : ''}${name}`}</h2>
 
         {isLoading && <p>Loading...</p>}
         {getAllError && !isLoading && <p>There was an error retrieving the requested data.</p>}
 
-        {!isLoading && !getAllError && !selectedId && (
+        {!isLoading && !getAllError && !isEditing && (
           <>
             <div className="action-buttons">
               <div className="error-text">{errorMessage}</div>
-              <button type="button" className="action-btn">{`Add ${name}`}</button>
+              <button type="button" className="action-btn" onClick={() => setIsEditing(true)}>{`Add ${name}`}</button>
             </div>
             <div className="table-container">
               <DataTable data={data} columns={columns} onSelect={onSelect} />
             </div>
           </>
         )}
-        {!isLoading && !getAllError && selectedId && (
-          <ModelInterface columns={columns} model={model} existingInstance={selectedId ? editingData : undefined} />
-        ) }
+
+        {!isLoading && !getAllError && isEditing && (
+          <ModelInterface columns={columns} model={model} existingInstance={editingData || undefined} />
+        )}
       </div>
 
       <CustomModal show={isDeleteModalShown} close={() => setIsDeleteModalShown(false)} title="Delete">

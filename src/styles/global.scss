@@ -212,9 +212,15 @@ input[type="text"] {
   font-size: 12px;
   position: absolute;
   right: 0;
-  top: -20px;
+  top: 25px;
   width: 100vw;
   text-align: right;
+}
+
+.back-button {
+  top: 0;
+  left: 20px;
+  position: absolute;
 }
 
 .image-upload {

@@ -42,7 +42,7 @@ const App = () => {
       }
     } else {
       setIsShukInfoShown(false);
-      setSelectedModel((m) => (m?.name !== model.name ? model : undefined));
+      setSelectedModel({ ...model });
     }
   };
 
