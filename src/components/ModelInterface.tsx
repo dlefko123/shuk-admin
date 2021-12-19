@@ -65,6 +65,15 @@ const ModelInterface = ({
     });
     const instanceToUpdate = { ...instance };
 
+    if (instanceToUpdate.start_date && instanceToUpdate.end_date) {
+      const startDate = new Date(instanceToUpdate.start_date);
+      const endDate = new Date(instanceToUpdate.end_date);
+      if (startDate > endDate) {
+        setErrorMessage('Start date must be before end date');
+        isError = true;
+      }
+    }
+
     // Convert dates to ISO format.
     Object.entries(instanceToUpdate).forEach(([key, value]) => {
       if (value instanceof Date) {
@@ -114,9 +123,9 @@ const ModelInterface = ({
           setEditingData(instanceToUpdate, true);
         });
       }
-    }
 
-    setIsEditing(false);
+      setIsEditing(false);
+    }
   };
 
   useEffect(() => {
