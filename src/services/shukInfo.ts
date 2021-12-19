@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { RootState } from '../store';
+import { ADMIN_PREFIX } from '../lib/constants';
 
 export type ShukInfo = {
   description_en: string;
@@ -9,7 +10,7 @@ export type ShukInfo = {
 const shukInfoApi = createApi({
   reducerPath: 'shukInfo',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/shuk-info',
+    baseUrl: `/${ADMIN_PREFIX}/shuk-info`,
     prepareHeaders: (headers, { getState }) => {
       const { token } = (getState() as RootState).auth;
       if (token) {

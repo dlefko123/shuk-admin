@@ -223,6 +223,14 @@ input[type="text"] {
   padding: 0;
 }
 
+.login-link {
+  color: rgba(0,0,0,0.7);
+  text-decoration: none;
+  margin: 50px auto;
+  font-size: 30px;
+  transition: 0.2s all;
+}
+
 @media screen and (max-width: 768px) {
   .models-pane {
     flex-direction: row;

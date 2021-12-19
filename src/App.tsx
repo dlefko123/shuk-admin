@@ -7,6 +7,7 @@ import ModelsPane from './components/ModelsPane';
 import { Model } from './lib/models';
 import ModelDetail from './components/ModelDetail';
 import ShukInfo from './components/ShukInfo';
+import { ADMIN_PREFIX } from './lib/constants';
 
 const App = () => {
   const dispatch = useAppDispatch();
@@ -15,10 +16,10 @@ const App = () => {
   const [isShukInfoShown, setIsShukInfoShown] = useState(false);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
+    const hashParams = window.location.hash.substr(1).split('&').map((param) => param.split('=')).flat(2);
 
-    if (urlParams.has('access_token')) {
-      dispatch(setToken(urlParams.get('access_token')));
+    if (hashParams && hashParams.length > 0 && hashParams[0] === 'access_token') {
+      dispatch(setToken(hashParams[1]));
     }
   }, [dispatch]);
 
@@ -42,16 +43,18 @@ const App = () => {
 
   return (
     <div className="App">
+      <h1 className="welcome-header">Welcome to the Shuk Admin API</h1>
       {isAuthenticated && (
-        <>
-          <h1 className="welcome-header">Welcome to the Shuk Admin API</h1>
-
-          <main>
-            <ModelsPane selectModel={selectModel} />
-            {selectedModel && <ModelDetail model={selectedModel} />}
-            {isShukInfoShown && <ShukInfo />}
-          </main>
-        </>
+        <main>
+          <ModelsPane selectModel={selectModel} />
+          {selectedModel && <ModelDetail model={selectedModel} />}
+          {isShukInfoShown && <ShukInfo />}
+        </main>
+      )}
+      {!isAuthenticated && (
+        <main>
+          <a className="login-link" href={`/${ADMIN_PREFIX}/admin/login`}>Login</a>
+        </main>
       )}
     </div>
   );
