@@ -156,7 +156,7 @@ const ModelInterface = ({
         <div className="interface-body">
           {columns.filter((accessor) => accessor !== 'id').map((accessor) => (
             <div className="model-input" key={accessor}>
-              {(!excludeLabels.includes(accessor.toLowerCase()) || !displayInputs) && <label>{accessor.replace(/[\W_]+/g, ' ')}</label>}
+              {(!excludeLabels.includes(accessor.toLowerCase()) || !displayInputs) && <label>{accessor.replace(/[\W_]+/g, ' ').replace('id', '')}</label>}
               {displayInputs && !(accessor === 'tags' && model.value !== 'stores') ? (
                 <ValueInput
                   accessor={accessor}
@@ -165,7 +165,7 @@ const ModelInterface = ({
                   instance={instance}
                   setInstance={setInstance}
                 />
-              ) : (<ValueOutput value={instance[accessor]} />)}
+              ) : (<ValueOutput accessor={accessor} value={instance[accessor]} />)}
             </div>
           ))}
         </div>

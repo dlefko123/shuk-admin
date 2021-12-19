@@ -40,7 +40,7 @@
     "test": "craco test",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .js,.ts,.tsx src/",
-    "package": "npm run build && zip build.zip ./api ./build ./public ./tests ./craco.config.js ./package.json ./Procfile ./requirements.txt ./settings.py ./tsconfig.json ./yarn.lock"
+    "package": "npm run build && zip -r build.zip ./api ./build ./public ./tests ./craco.config.js ./package.json ./Procfile ./requirements.txt ./settings.py ./tsconfig.json ./yarn.lock"
   },
   "eslintConfig": {
     "extends": [

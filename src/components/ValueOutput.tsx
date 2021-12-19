@@ -1,5 +1,23 @@
 /* eslint-disable react/no-danger */
-const ValueOutput = ({ value }: { value: any }) => {
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../store';
+import { models } from '../lib/models';
+
+const ValueOutput = ({ accessor, value }: { accessor?: string, value: any }) => {
+  const state = useAppSelector((s) => s);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (accessor) {
+      const modelName = accessor.split('_').slice(0, -1).join(' ');
+      const modelParent = models.find((m) => m.name.toLowerCase() === modelName);
+
+      if (modelParent) {
+        dispatch((modelParent.getAll as any).initiate());
+      }
+    }
+  }, [accessor, dispatch]);
+
   const renderCell = (val: any) => {
     switch (typeof val) {
       case 'object': {
@@ -11,6 +29,21 @@ const ValueOutput = ({ value }: { value: any }) => {
       case 'string':
         if (val.startsWith('http')) {
           return [`<img src="${val}" class="table-img" alt="" />`];
+        }
+        if (accessor && accessor.includes('id')) {
+          const modelName = accessor.split('_').slice(0, -1).join(' ');
+          const modelParent = models.find((m) => m.name.toLowerCase() === modelName);
+          if (!modelParent) return [];
+
+          const { data } = (modelParent.getAll as any).select()(state);
+
+          if (data) {
+            const item = data.find((i) => i.id === val);
+            if (!item) return [];
+
+            return [item.name_en];
+          }
+          return [];
         }
         return [val];
       case 'boolean':
@@ -26,6 +59,10 @@ const ValueOutput = ({ value }: { value: any }) => {
         .map((val: any) => <div className="cell-section">{val}</div>)}
     </div>
   );
+};
+
+ValueOutput.defaultProps = {
+  accessor: '',
 };
 
 export default ValueOutput;

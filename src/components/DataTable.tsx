@@ -84,7 +84,7 @@ const DataTable = ({ data, columns, onSelect }: DataTableProps) => {
             <div {...row.getRowProps()} className="table-row" onClick={() => onSelect(row.original.id)} role="button" tabIndex={0}>
               {row.cells.map((cell) => (
                 <div {...cell.getCellProps()} className="table-cell">
-                  <ValueOutput value={cell.value} />
+                  <ValueOutput accessor={columns.find((col) => col.Header === cell.column.Header?.toString())?.accessor} value={cell.value} />
                 </div>
               ))}
             </div>

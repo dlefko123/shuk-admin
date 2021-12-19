@@ -39,7 +39,7 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
   const columns = useMemo(() => {
     const headerKeys = [...Object.keys(data && data.length > 0 ? data[0] : type).filter((s) => !columnsToOmit.includes(s) && !s.includes('url'))];
     return headerKeys.map((key) => ({
-      Header: key.replace(/[\W_]+/g, ' '),
+      Header: key.replace(/[\W_]+/g, ' ').replace('id', ''),
       accessor: key,
     }));
   }, [data, type]);
