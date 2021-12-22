@@ -3,8 +3,7 @@ import DatePicker from 'react-datepicker';
 import ImageUpload from './ImageUpload';
 import { Model, models } from '../lib/models';
 import { useAppDispatch, useAppSelector } from '../store';
-import { useGetTagsQuery } from '../services/tag';
-import { useAddTagMutation, useDeleteTagMutation } from '../services/store';
+import TagSelect from './TagSelect';
 
 type ValueInputProps = {
   accessor: string;
@@ -21,9 +20,6 @@ const ValueInput = ({
 }: ValueInputProps) => {
   const dispatch = useAppDispatch();
   const state = useAppSelector((s) => s);
-  const [addTag] = useAddTagMutation({ fixedCacheKey: 'addTag' });
-  const [removeTag] = useDeleteTagMutation({ fixedCacheKey: 'removeTag' });
-  const { data: tags } = useGetTagsQuery();
   const { data: allData } = (model.getAll as any).select()(state);
 
   useEffect(() => {
@@ -116,21 +112,7 @@ const ValueInput = ({
   }
   if (key === 'tags') {
     return (
-      <div>
-        <select onChange={(e) => addTag({ store_id: instance.id, tag_id: e.target.value })}>
-          {tags && tags.map((tag) => (
-            <option key={tag.id} value={tag.id}>{tag.name_en}</option>
-          ))}
-        </select>
-        <div>
-          {instance.tags && instance.tags.map((tag) => (
-            <div key={tag.id} className="tag-item">
-              <div>{tag.name_en}</div>
-              <button type="button" onClick={() => removeTag({ store_id: instance.id, tag_id: tag.id })}>X</button>
-            </div>
-          ))}
-        </div>
-      </div>
+      <TagSelect instance={instance} />
     );
   }
   return null;
