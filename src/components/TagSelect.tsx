@@ -18,13 +18,13 @@ const TagSelect = ({ instance, setInstance }: { instance?: any, setInstance: (in
   const onChange = (t: readonly Option[] | Option | null, actionMeta: ActionMeta<Option>) => {
     switch (actionMeta.action) {
       case 'select-option':
-        if (t && 'value' in t) {
+        if (t && 'value' in t) { // Single select, tag being added.
           const tag = tags?.find((v) => v.id === t.value);
           addTag({
             tag_id: t.value,
             store_id: instance.id,
           });
-          if (tag) {
+          if (tag) { // Remove all other tags from this group.
             const tagToRemove = instance.tags?.find((v) => v.tag_group_id === tag.tag_group_id);
             setInstance({
               ...instance,
@@ -37,7 +37,7 @@ const TagSelect = ({ instance, setInstance }: { instance?: any, setInstance: (in
               });
             }
           }
-        } else if (Array.isArray(t)) {
+        } else if (Array.isArray(t)) { // Multi select, adding a tag.
           t.forEach((tagOption) => {
             const tag = tags?.find((v) => v.id === tagOption.value);
             addTag({
