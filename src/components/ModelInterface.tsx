@@ -39,7 +39,7 @@ const ModelInterface = ({
   const [updateById, updateResult] = useUpdate();
   const [addOne, addResult] = useAddOne();
   const { refetch } = useGetAll();
-  const [a, addTagResult] = useAddTagMutation({ fixedCacheKey: 'addTag' });
+  const [addTag, addTagResult] = useAddTagMutation({ fixedCacheKey: 'addTag' });
   const [b, removeTagResult] = useDeleteTagMutation({ fixedCacheKey: 'removeTag' });
   const [instance, setInstance] = useState<any>(existingInstance ?? {});
   const [errorMessage, setErrorMessage] = useState('');
@@ -119,8 +119,16 @@ const ModelInterface = ({
         setEditingData(instanceToUpdate, false);
         refetch();
       } else {
-        addOne(instanceToUpdate as ModelInstance).unwrap().then(() => {
+        addOne(instanceToUpdate as ModelInstance).unwrap().then((store) => {
           setEditingData(instanceToUpdate, true);
+          if (instanceToUpdate.tags) {
+            instanceToUpdate.tags.forEach((tag) => {
+              addTag({
+                tag_id: tag.id,
+                store_id: store.id,
+              });
+            });
+          }
         });
       }
 

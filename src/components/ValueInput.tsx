@@ -105,6 +105,16 @@ const ValueInput = ({
       <TagSelect instance={instance} setInstance={setInstance} />
     );
   }
+  if (model.type[key] === 'option') {
+    if (key === 'type') {
+      return (
+        <select onChange={(e) => setInstance((i) => ({ ...i, [key]: e.target.value }))} value={instance[key]}>
+          <option value="SINGLE">Single</option>
+          <option value="MULTI">Multi</option>
+        </select>
+      );
+    }
+  }
   return null;
 };
 

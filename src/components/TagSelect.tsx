@@ -9,7 +9,7 @@ type Option = {
   label: string;
 };
 
-const TagSelect = ({ instance, setInstance }: { instance: any, setInstance: (instance: any) => void }) => {
+const TagSelect = ({ instance, setInstance }: { instance?: any, setInstance: (instance: any) => void }) => {
   const [addTag] = useAddTagMutation({ fixedCacheKey: 'addTag' });
   const [removeTag] = useDeleteTagMutation({ fixedCacheKey: 'removeTag' });
   const { data: tagGroups } = useGetTagGroupsQuery();
@@ -29,7 +29,7 @@ const TagSelect = ({ instance, setInstance }: { instance: any, setInstance: (ins
             const tagToRemove = instance.tags?.find((v) => v.tag_group_id === tag.tag_group_id);
             setInstance({
               ...instance,
-              tags: [...instance.tags.filter((v) => v.tag_group_id !== tag?.tag_group_id), tag],
+              tags: instance.tags ? [...instance.tags.filter((v) => v.tag_group_id !== tag?.tag_group_id), tag] : [tag],
             });
             if (tagToRemove) {
               removeTag({
@@ -48,7 +48,7 @@ const TagSelect = ({ instance, setInstance }: { instance: any, setInstance: (ins
             if (tag) {
               setInstance({
                 ...instance,
-                tags: [...instance.tags, tag],
+                tags: instance.tags ? [...instance.tags, tag] : [tag],
               });
             }
           });
@@ -82,7 +82,7 @@ const TagSelect = ({ instance, setInstance }: { instance: any, setInstance: (ins
         <>
           <label className="tag-group-label">{tagGroup.name_en}</label>
           <Select
-            defaultValue={instance.tags.filter((tag) => tagGroup.tags.find((t) => tag.id === t.id)).map((tag) => ({ value: tag.id, label: tag.name_en }))}
+            defaultValue={instance.tags?.filter((tag) => tagGroup.tags.find((t) => tag.id === t.id)).map((tag) => ({ value: tag.id, label: tag.name_en }))}
             options={tagGroup.tags.map((tag) => ({ value: tag.id, label: tag.name_en }))}
             key={tagGroup.id}
             isMulti={tagGroup.type === 'MULTI'}
@@ -92,6 +92,10 @@ const TagSelect = ({ instance, setInstance }: { instance: any, setInstance: (ins
       ))}
     </div>
   );
+};
+
+TagSelect.defaultProps = {
+  instance: {},
 };
 
 export default TagSelect;
