@@ -10,7 +10,7 @@ export type ShukInfo = {
 const shukInfoApi = createApi({
   reducerPath: 'shukInfo',
   baseQuery: fetchBaseQuery({
-    baseUrl: `/${ADMIN_PREFIX}/shuk-info`,
+    baseUrl: `${ADMIN_PREFIX}/shuk-info`,
     prepareHeaders: (headers, { getState }) => {
       const { token } = (getState() as RootState).auth;
       if (token) {

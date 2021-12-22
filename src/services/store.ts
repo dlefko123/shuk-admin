@@ -47,7 +47,7 @@ export const storeType = {
 const storeApi = createApi({
   reducerPath: 'store',
   baseQuery: fetchBaseQuery({
-    baseUrl: `/${ADMIN_PREFIX}/stores`,
+    baseUrl: `${ADMIN_PREFIX}/stores`,
     prepareHeaders: (headers, { getState }) => {
       const { token } = (getState() as RootState).auth;
       if (token) {

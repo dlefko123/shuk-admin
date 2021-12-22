@@ -59,7 +59,7 @@ const App = () => {
       )}
       {!isAuthenticated && hasLoaded && (
         <main>
-          <a className="login-link" href={`/${ADMIN_PREFIX}/admin/login`}>Login</a>
+          <a className="login-link" href={`${ADMIN_PREFIX}/admin/login`}>Login</a>
         </main>
       )}
     </div>

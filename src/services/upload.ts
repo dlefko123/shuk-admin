@@ -4,7 +4,7 @@ export const uploadImage = async (file: File, token: string) => {
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await fetch(`/${ADMIN_PREFIX}/images`, {
+  const response = await fetch(`${ADMIN_PREFIX}/images`, {
     method: 'POST',
     body: formData,
     headers: {

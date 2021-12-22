@@ -97,3 +97,30 @@ def update_db_promo(promo: m.Promo, promo_update: PromoUpdate) -> None:
     promo.description_he = promo_update.description_he
     promo.image_filename = parse_filename(promo_update.image_url)
     promo.is_ad = promo_update.is_ad
+
+
+def to_api_tag_group(tag_group: m.TagGroup) -> TagGroup:
+    return TagGroup(
+        id=tag_group.id,
+        name_en=tag_group.name_en,
+        name_he=tag_group.name_he,
+        type=TagGroupType[tag_group.type],
+        tags=mapl(Tag.from_orm, tag_group.tags),
+    )
+
+
+def to_db_tag_group(id: UUID, tag_group: TagGroupUpdate) -> m.TagGroup:
+    return m.TagGroup(
+        id=id,
+        name_en=tag_group.name_en,
+        name_he=tag_group.name_he,
+        type=tag_group.type.value,
+    )
+
+
+def update_db_tag_group(
+    tag_group: m.TagGroup, tag_group_update: TagGroupUpdate
+) -> None:
+    tag_group.name_en = tag_group_update.name_en
+    tag_group.name_he = tag_group_update.name_he
+    tag_group.type = tag_group_update.type.value

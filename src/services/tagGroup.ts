@@ -20,7 +20,7 @@ export const tagGroupType = {
 const tagGroupApi = createApi({
   reducerPath: 'tagGroup',
   baseQuery: fetchBaseQuery({
-    baseUrl: `/${ADMIN_PREFIX}/tag-groups`,
+    baseUrl: `${ADMIN_PREFIX}/tag-groups`,
     prepareHeaders: (headers, { getState }) => {
       const { token } = (getState() as RootState).auth;
       if (token) {

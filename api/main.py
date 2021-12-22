@@ -11,8 +11,8 @@ from fastapi import Depends, FastAPI, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
-from fastapi.staticfiles import StaticFiles
 from fastapi_utils.tasks import repeat_every
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload
 from starlette.responses import RedirectResponse
 
@@ -23,12 +23,6 @@ from api.database import *
 from api.utils import *
 from settings import *
 
-class SPAStaticFiles(StaticFiles):
-    async def get_response(self, path: str, scope):
-        response = await super().get_response(path, scope)
-        if response.status_code == 404:
-            response = await super().get_response('.', scope)
-        return response
 
 def verify_new_and_expire_old_images(
     db: Session, new_urls: List[str], current_filenames: List[str]
@@ -56,6 +50,14 @@ app = FastAPI(
 )
 bearer = HTTPBearer()
 
+origins = ['*']
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def authorize_admin(auth: HTTPAuthorizationCredentials = Depends(bearer)) -> None:
     try:
@@ -134,34 +136,40 @@ def login_callback(code: str = "", error: str = ""):
             url=f"{ADMIN_APP_LOGIN_CALLBACK_URL}#access_token={token.id}"
         )
 
-app.mount("/static", StaticFiles(directory='build/static', html=True), name='static')
-app.mount(ADMIN_API_PATH_PREFIX + "/client", StaticFiles(directory='build', html=True), name='build')
 
-# @app.get(ADMIN_API_PATH_PREFIX + "/client", tags=["auth"])
-# def get_client_page():
-#     """This page is just a stand-in for the admin app.
-#     It extracts the bearer token from the URL fragment
-#     and shows it on the page. See the description of
-#     `/admin/login` endpoint."""
-#     return HTMLResponse(
-#         status_code=200,
-#         content="""
-#             <script type="text/javascript">
-#                 var token = window.location.href.split("access_token=").at(-1);
-#                 document.write("Your bearer token is <b>" + token + "</b>");
-#             </script>
-#             """,
-#     )
+@app.get(ADMIN_API_PATH_PREFIX + "/client", tags=["auth"])
+def get_client_page():
+    """This page is just a stand-in for the admin app.
+    It extracts the bearer token from the URL fragment
+    and shows it on the page. See the description of
+    `/admin/login` endpoint."""
+    return HTMLResponse(
+        status_code=200,
+        content="""
+            <script type="text/javascript">
+                var token = window.location.href.split("access_token=").at(-1);
+                document.write("Your bearer token is <b>" + token + "</b>");
+            </script>
+            """,
+    )
 
 
-@app.get(ADMIN_API_PATH_PREFIX + "/subcategories", tags=["subcategory"], response_model=List[Subcategory])
+@app.get(
+    ADMIN_API_PATH_PREFIX + "/subcategories",
+    tags=["subcategory"],
+    response_model=List[Subcategory],
+)
 def get_subcategories() -> List[Subcategory]:
     """Get all subcategories."""
     with transaction() as db:
         return mapl(Subcategory.from_orm, db.query(m.Subcategory).all())
 
 
-@app.get(ADMIN_API_PATH_PREFIX + "/subcategories/{id}", tags=["subcategory"], response_model=Subcategory)
+@app.get(
+    ADMIN_API_PATH_PREFIX + "/subcategories/{id}",
+    tags=["subcategory"],
+    response_model=Subcategory,
+)
 def get_subcategory(id: UUID) -> Subcategory:
     """Get one subcategory."""
     with transaction() as db:
@@ -171,7 +179,11 @@ def get_subcategory(id: UUID) -> Subcategory:
         return Subcategory.from_orm(subcategory)
 
 
-@app.post(ADMIN_API_PATH_PREFIX + "/subcategories", tags=["subcategory"], response_model=Subcategory)
+@app.post(
+    ADMIN_API_PATH_PREFIX + "/subcategories",
+    tags=["subcategory"],
+    response_model=Subcategory,
+)
 def add_subcategory(
     subcategory_update: SubcategoryUpdate,
     _: None = Depends(authorize_admin),
@@ -215,7 +227,11 @@ def delete_subcategory(id: UUID, _: str = Depends(authorize_admin)) -> None:
 
 
 @app.get("/categories", tags=["public"], response_model=List[Category])
-@app.get(ADMIN_API_PATH_PREFIX + "/categories", tags=["category"], response_model=List[Category])
+@app.get(
+    ADMIN_API_PATH_PREFIX + "/categories",
+    tags=["category"],
+    response_model=List[Category],
+)
 def get_categories() -> List[Category]:
     """Get all categories with subcategories."""
     with transaction() as db:
@@ -225,7 +241,11 @@ def get_categories() -> List[Category]:
         )
 
 
-@app.get(ADMIN_API_PATH_PREFIX + "/categories/{id}", tags=["category"], response_model=Category)
+@app.get(
+    ADMIN_API_PATH_PREFIX + "/categories/{id}",
+    tags=["category"],
+    response_model=Category,
+)
 def get_category(id: UUID) -> Category:
     """Get one category with its subcategories."""
     with transaction() as db:
@@ -235,7 +255,9 @@ def get_category(id: UUID) -> Category:
         return Category.from_orm(category)
 
 
-@app.post(ADMIN_API_PATH_PREFIX + "/categories", tags=["category"], response_model=Category)
+@app.post(
+    ADMIN_API_PATH_PREFIX + "/categories", tags=["category"], response_model=Category
+)
 def add_category(
     category_update: CategoryUpdate,
     _: None = Depends(authorize_admin),
@@ -341,24 +363,37 @@ def delete_tag(id: UUID, _: str = Depends(authorize_admin)) -> None:
 
 
 @app.get("/tag-groups", tags=["public"], response_model=List[TagGroup])
-@app.get(ADMIN_API_PATH_PREFIX + "/tag-groups", tags=["tag_group"], response_model=List[TagGroup])
+@app.get(
+    ADMIN_API_PATH_PREFIX + "/tag-groups",
+    tags=["tag_group"],
+    response_model=List[TagGroup],
+)
 def get_tag_groups() -> List[TagGroup]:
     """Get all tag groups with tags."""
     with transaction() as db:
-        return mapl(TagGroup.from_orm, db.query(m.TagGroup).all())
+        return mapl(
+            mapper.to_api_tag_group,
+            db.query(m.TagGroup).options(joinedload(m.TagGroup.tags)).all(),
+        )
 
 
-@app.get(ADMIN_API_PATH_PREFIX + "/tag-groups/{id}", tags=["tag_group"], response_model=TagGroup)
+@app.get(
+    ADMIN_API_PATH_PREFIX + "/tag-groups/{id}",
+    tags=["tag_group"],
+    response_model=TagGroup,
+)
 def get_tag_group(id: UUID) -> TagGroup:
     """Get one tag group with its tags."""
     with transaction() as db:
         tag_group = db.get(m.TagGroup, ident=id)
         if not tag_group:
             raise e404()
-        return TagGroup.from_orm(tag_group)
+        return mapper.to_api_tag_group(tag_group)
 
 
-@app.post(ADMIN_API_PATH_PREFIX + "/tag-groups", tags=["tag_group"], response_model=TagGroup)
+@app.post(
+    ADMIN_API_PATH_PREFIX + "/tag-groups", tags=["tag_group"], response_model=TagGroup
+)
 def add_tag_group(
     tag_group_update: TagGroupUpdate,
     _: None = Depends(authorize_admin),
@@ -366,9 +401,9 @@ def add_tag_group(
     """Add a new tag group."""
     with transaction() as db:
         id = gen_id()
-        db.add(m.TagGroup(id=id, **tag_group_update.dict()))
+        db.add(mapper.to_db_tag_group(id, tag_group_update))
         tag_group = db.get(m.TagGroup, ident=id)
-        return TagGroup.from_orm(tag_group)
+        return mapper.to_api_tag_group(tag_group)
 
 
 @app.patch(ADMIN_API_PATH_PREFIX + "/tag-groups/{id}", tags=["tag_group"])
@@ -382,10 +417,9 @@ def update_tag_group(
         tag_group = db.get(m.TagGroup, ident=id)
         if not tag_group:
             raise e404()
-        for k, v in tag_group_update.dict().items():
-            setattr(tag_group, k, v)
+        mapper.update_db_tag_group(tag_group, tag_group_update)
         tag_group = db.get(m.TagGroup, ident=id)
-        return TagGroup.from_orm(tag_group)
+        return mapper.to_api_tag_group(tag_group)
 
 
 @app.delete(ADMIN_API_PATH_PREFIX + "/tag-groups/{id}", tags=["tag_group"])
@@ -470,12 +504,18 @@ def delete_promo(id: UUID, _: str = Depends(authorize_admin)) -> None:
         verify_new_and_expire_old_images(db, [], [promo.image_filename])
         db.delete(promo)
 
+
 @app.get("/stores", tags=["public"], response_model=List[Store])
 @app.get(ADMIN_API_PATH_PREFIX + "/stores", tags=["store"], response_model=List[Store])
 def get_stores() -> List[Store]:
     """Get all stores with promos."""
     with transaction() as db:
-        return mapl(mapper.to_api_store, db.query(m.Store).all())
+        return mapl(
+            mapper.to_api_store,
+            db.query(m.Store)
+            .options(joinedload(m.Store.tags), joinedload(m.Store.promos))
+            .all(),
+        )
 
 
 @app.get(ADMIN_API_PATH_PREFIX + "/stores/{id}", tags=["store"], response_model=Store)
@@ -615,7 +655,9 @@ def add_shuk_info(
             db.add(info)
 
 
-@app.get(ADMIN_API_PATH_PREFIX + "/shuk-info", tags=["shuk-info"], response_model=ShukInfo)
+@app.get(
+    ADMIN_API_PATH_PREFIX + "/shuk-info", tags=["shuk-info"], response_model=ShukInfo
+)
 def get_shuk_info() -> ShukInfo:
     """Get ShukApp general information text."""
     with transaction() as db:
@@ -655,7 +697,7 @@ def upload_image(
 
 
 @app.on_event("startup")
-@repeat_every(seconds=60*10)
+@repeat_every(seconds=60 * 10)
 def clean_up_images_and_tokens() -> None:
     """Delete expired images if 30 days has passed since expiration.
     Delete temporary images 3 days after they were uploaded.
