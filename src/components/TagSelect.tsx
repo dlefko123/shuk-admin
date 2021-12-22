@@ -16,7 +16,6 @@ const TagSelect = ({ instance, setInstance }: { instance?: any, setInstance: (in
   const { data: tags } = useGetTagsQuery();
 
   const onChange = (t: readonly Option[] | Option | null, actionMeta: ActionMeta<Option>) => {
-    console.log(t, actionMeta);
     switch (actionMeta.action) {
       case 'select-option':
         if (t && 'value' in t) {
