@@ -20,7 +20,6 @@ const ValueInput = ({
 }: ValueInputProps) => {
   const dispatch = useAppDispatch();
   const state = useAppSelector((s) => s);
-  const { data: allData } = (model.getAll as any).select()(state);
 
   useEffect(() => {
     const modelName = key.split('_').slice(0, -1).join(' ');
@@ -30,15 +29,6 @@ const ValueInput = ({
       dispatch((modelParent.getAll as any).initiate());
     }
   }, [key, dispatch]);
-
-  useEffect(() => {
-    if (allData) {
-      const apiData = allData.find((d) => d.id === instance.id);
-      if (apiData && apiData.tags) {
-        setInstance((prevState) => ({ ...prevState, tags: apiData.tags }));
-      }
-    }
-  }, [allData, instance, setInstance]);
 
   if (model.type[key] === 'array' && key.includes('url')) {
     return (
@@ -112,7 +102,7 @@ const ValueInput = ({
   }
   if (key === 'tags') {
     return (
-      <TagSelect instance={instance} />
+      <TagSelect instance={instance} setInstance={setInstance} />
     );
   }
   return null;
