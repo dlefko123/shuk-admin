@@ -19,7 +19,7 @@ export const tagType = {
 const tagApi = createApi({
   reducerPath: 'tag',
   baseQuery: fetchBaseQuery({
-    baseUrl: `/${ADMIN_PREFIX}/tags`,
+    baseUrl: `${ADMIN_PREFIX}/tags`,
     prepareHeaders: (headers, { getState }) => {
       const { token } = (getState() as RootState).auth;
       if (token) {

@@ -47,7 +47,7 @@ export const storeType = {
 const storeApi = createApi({
   reducerPath: 'store',
   baseQuery: fetchBaseQuery({
-    baseUrl: `/${ADMIN_PREFIX}/stores`,
+    baseUrl: `${ADMIN_PREFIX}/stores`,
     prepareHeaders: (headers, { getState }) => {
       const { token } = (getState() as RootState).auth;
       if (token) {
@@ -95,11 +95,25 @@ const storeApi = createApi({
       }),
       invalidatesTags: (result, error, id) => [{ type: 'Store', id }],
     }),
+    addTag: builder.mutation<void, { store_id: string, tag_id: string }>({
+      query: ({ store_id, tag_id }) => ({
+        url: `/${store_id}/tags/${tag_id}`,
+        method: 'POST',
+      }),
+      invalidatesTags: (result, error, { store_id }) => [{ type: 'Store', id: store_id }],
+    }),
+    deleteTag: builder.mutation<void, { store_id: string, tag_id: string }>({
+      query: ({ store_id, tag_id }) => ({
+        url: `/${store_id}/tags/${tag_id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, { store_id }) => [{ type: 'Store', id: store_id }],
+    }),
   }),
 });
 
 export const {
-  useAddStoreMutation, useUpdateStoreMutation, useDeleteStoreMutation, useGetStoresQuery, useGetStoreByIdQuery,
+  useAddStoreMutation, useUpdateStoreMutation, useDeleteStoreMutation, useGetStoresQuery, useGetStoreByIdQuery, useAddTagMutation, useDeleteTagMutation,
 } = storeApi;
 
 export default storeApi;

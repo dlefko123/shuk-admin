@@ -25,7 +25,7 @@ export const subcategoryType = {
 const categoryApi = createApi({
   reducerPath: 'category',
   baseQuery: fetchBaseQuery({
-    baseUrl: `/${ADMIN_PREFIX}/categories`,
+    baseUrl: `${ADMIN_PREFIX}/categories`,
     prepareHeaders: (headers, { getState }) => {
       const { token } = (getState() as RootState).auth;
       if (token) {

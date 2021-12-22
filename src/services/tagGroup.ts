@@ -8,6 +8,7 @@ export type TagGroup = {
   tags: Tag[];
   name_en: string;
   name_he: string;
+  type: 'SINGLE' | 'MULTI';
 };
 
 export const tagGroupType = {
@@ -15,12 +16,13 @@ export const tagGroupType = {
   tags: 'array',
   name_en: 'string',
   name_he: 'string',
+  type: 'option',
 };
 
 const tagGroupApi = createApi({
   reducerPath: 'tagGroup',
   baseQuery: fetchBaseQuery({
-    baseUrl: `/${ADMIN_PREFIX}/tag-groups`,
+    baseUrl: `${ADMIN_PREFIX}/tag-groups`,
     prepareHeaders: (headers, { getState }) => {
       const { token } = (getState() as RootState).auth;
       if (token) {

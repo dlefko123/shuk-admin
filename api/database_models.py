@@ -114,6 +114,7 @@ class TagGroup:
     id: UUID = field(metadata={"sa": Column(pg.UUID(as_uuid=True), primary_key=True)})
     name_en: str = field(metadata={"sa": Column(Text, nullable=False)})
     name_he: str = field(metadata={"sa": Column(Text, nullable=False)})
+    type: str = field(metadata={"sa": Column(Text, nullable=False)})
     tags: List[Tag] = field(default_factory=list, metadata={"sa": relationship("Tag")})
 
 

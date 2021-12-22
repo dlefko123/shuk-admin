@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from datetime import date
 from decimal import Decimal
+from enum import auto
 from typing import List
 from uuid import UUID
 
+from fastapi_utils.enums import StrEnum
 from pydantic import BaseModel
 
 
@@ -51,16 +53,23 @@ class TagUpdate(Base):
     name_he: str
 
 
+class TagGroupType(StrEnum):
+    SINGLE = auto()
+    MULTI = auto()
+
+
 class TagGroup(Base):
     id: UUID
     name_en: str
     name_he: str
+    type: TagGroupType
     tags: List[Tag]
 
 
 class TagGroupUpdate(Base):
     name_en: str
     name_he: str
+    type: TagGroupType
 
 
 class LatLng(Base):

@@ -6,7 +6,7 @@ import { ADMIN_PREFIX } from '../lib/constants';
 const subcategoryApi = createApi({
   reducerPath: 'subcategory',
   baseQuery: fetchBaseQuery({
-    baseUrl: `/${ADMIN_PREFIX}/subcategories`,
+    baseUrl: `${ADMIN_PREFIX}/subcategories`,
     prepareHeaders: (headers, { getState }) => {
       const { token } = (getState() as RootState).auth;
       if (token) {

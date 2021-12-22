@@ -31,6 +31,13 @@ const ShukInfo = () => {
     }
   }, [getError, updateError]);
 
+  useEffect(() => {
+    if (data) {
+      setDescriptionEn(data.description_en);
+      setDescriptionHe(data.description_he);
+    }
+  }, [data]);
+
   const update = () => {
     updateInfo({
       description_en: descriptionEn,
@@ -66,11 +73,11 @@ const ShukInfo = () => {
             <div className="interface-body">
               <div className="model-input">
                 <label htmlFor="description_en">English description</label>
-                <input type="text" name="description_en" value={descriptionEn} onChange={(e) => setDescriptionEn(e.target.value)} />
+                <textarea name="description_en" value={descriptionEn} onChange={(e) => setDescriptionEn(e.target.value)} />
               </div>
               <div className="model-input">
                 <label htmlFor="description_he">Hebrew description</label>
-                <input type="text" name="description_he" value={descriptionHe} onChange={(e) => setDescriptionHe(e.target.value)} />
+                <textarea name="description_he" value={descriptionHe} onChange={(e) => setDescriptionHe(e.target.value)} />
               </div>
             </div>
           </div>

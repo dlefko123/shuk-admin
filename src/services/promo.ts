@@ -27,7 +27,7 @@ export const promoType = {
 const promoApi = createApi({
   reducerPath: 'promo',
   baseQuery: fetchBaseQuery({
-    baseUrl: `/${ADMIN_PREFIX}/promos`,
+    baseUrl: `${ADMIN_PREFIX}/promos`,
     prepareHeaders: (headers, { getState }) => {
       const { token } = (getState() as RootState).auth;
       if (token) {
