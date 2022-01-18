@@ -28,7 +28,7 @@ export const checkIsTokenValid = createAsyncThunk(
       return false;
     }
     return true;
-  },
+  }
 );
 
 export const authSlice = createSlice({

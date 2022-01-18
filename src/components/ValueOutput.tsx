@@ -6,7 +6,6 @@ import { models } from '../lib/models';
 const ValueOutput = ({ accessor, value }: { accessor?: string, value: any }) => {
   const state = useAppSelector((s) => s);
   const dispatch = useAppDispatch();
-
   useEffect(() => {
     if (accessor) {
       const modelName = accessor.split('_').slice(0, -1).join(' ');
@@ -39,6 +38,7 @@ const ValueOutput = ({ accessor, value }: { accessor?: string, value: any }) => 
 
           if (data) {
             const item = data.find((i) => i.id === val);
+            // console.log(item);
             if (!item) return [];
 
             return [item.name_en];

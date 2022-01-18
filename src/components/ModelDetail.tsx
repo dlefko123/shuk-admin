@@ -1,14 +1,18 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-console */
-import {
+import React, {
   useEffect, useMemo, useState, useCallback,
 } from 'react';
+import debounce from 'lodash.debounce';
 import { Button, Modal } from 'react-bootstrap';
 import { isFetchBaseQueryErrorType } from '../lib/constants';
 import type { Model } from '../lib/models';
+import { filterData } from '../utils';
 import CustomModal from './CustomModal';
 import DataTable from './DataTable';
+import FilterInput from './FilterInput';
 import ModelInterface from './ModelInterface';
+import { useAppSelector } from '../store';
 
 type ModelDetailProps = {
   model: Model;
@@ -23,6 +27,7 @@ const columnsToOmit = [
 ];
 
 const ModelDetail = ({ model }: ModelDetailProps) => {
+  const state = useAppSelector((s) => s);
   const {
     name, useGetAll, useDeleteById, type,
   } = model;
@@ -34,8 +39,9 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [editingData, setEditingData] = useState<any>({});
   const [isEditing, setIsEditing] = useState(false);
-
+  const [searchString, setSearchString] = useState('');
   const data = useMemo(() => apiAllData || [], [apiAllData]);
+  const [filteredData, setFilteredData] = useState(data);
   const columns = useMemo(() => {
     const headerKeys = [...Object.keys(data && data.length > 0 ? data[0] : type).filter((s) => !columnsToOmit.includes(s) && !s.includes('url'))];
     return headerKeys.map((key) => ({
@@ -44,7 +50,6 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
     }));
   }, [data, type]);
   const allColumns = useMemo(() => [...Object.keys(data && data.length > 0 ? data[0] : type)], [data, type]);
-
   const deleteItem = () => {
     if (editingData && editingData.id) {
       deleteById(editingData.id);
@@ -81,13 +86,29 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
     setEditingData(d);
     if (setEditing) setIsEditing(false);
   };
-
+  const handleInputChange = (event:React.FormEvent<HTMLInputElement>) => {
+    setSearchString(event?.currentTarget?.value.toLocaleLowerCase());
+  };
+  useEffect(() => {
+    if (data.length > 0) setFilteredData(data);
+  }, [data]);
+  useEffect(() => {
+    const handleFiltering = () => {
+      const filtered = data.length > 0 && filterData({ dataToFilter: data, searchString, state });
+      setFilteredData(filtered);
+    };
+    const debounced = debounce(handleFiltering, 500);
+    if (data.length > 0) debounced();
+  }, [searchString, setFilteredData, data, state]);
+  const clearFilter = () => {
+    setSearchString('');
+  };
   return (
     <>
       <div className="model-detail">
         {isEditing && (<button type="button" onClick={onRefresh} className="back-button">{'< Back'}</button>)}
         <h2 className="model-name">{`${isEditing ? (editingData && editingData.id ? 'Edit ' : 'Add ') : ''}${name}`}</h2>
-
+        {!isEditing && <FilterInput clearFilter={clearFilter} disabled={isLoading} value={searchString} onChange={handleInputChange} />}
         {isLoading && <p>Loading...</p>}
         {getAllError && !isLoading && <p>There was an error retrieving the requested data.</p>}
 
@@ -98,7 +119,7 @@ const ModelDetail = ({ model }: ModelDetailProps) => {
               <button type="button" className="action-btn" onClick={() => setIsEditing(true)}>{`Add ${name}`}</button>
             </div>
             <div className="table-container">
-              <DataTable data={data} columns={columns} onSelect={onSelect} />
+              <DataTable data={filteredData} columns={columns} onSelect={onSelect} />
             </div>
           </>
         )}

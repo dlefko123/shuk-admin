@@ -20,7 +20,6 @@ type DataTableProps = {
 const DataTable = ({ data, columns, onSelect }: DataTableProps) => {
   const headerRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
-
   const defaultColumn = useMemo(
     () => ({
       minWidth: 30,
