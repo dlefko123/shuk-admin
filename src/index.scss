@@ -31,7 +31,9 @@ main {
   display: flex !important;
   flex-direction: row;
 }
-
+.filter-input {
+  margin-bottom: 24px;
+}
 @media screen and (max-width: 768px) {
   main {
     flex-direction: column;

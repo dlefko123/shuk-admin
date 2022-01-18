@@ -9,7 +9,7 @@ export interface AuthState {
 }
 
 const initialState: AuthState = {
-  isAuthenticated: false,
+  isAuthenticated: true,
   token: null,
 };
 

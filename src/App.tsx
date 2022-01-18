@@ -49,7 +49,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <h1 className="welcome-header">Welcome to the Shuk Admin API</h1>
+      {/* <h1 className="welcome-header">Welcome to the Shuk Admin API</h1> */}
       {isAuthenticated && hasLoaded && (
         <main>
           <ModelsPane selectModel={selectModel} />
