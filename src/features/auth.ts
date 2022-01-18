@@ -9,7 +9,7 @@ export interface AuthState {
 }
 
 const initialState: AuthState = {
-  isAuthenticated: true,
+  isAuthenticated: false,
   token: null,
 };
 
@@ -28,7 +28,7 @@ export const checkIsTokenValid = createAsyncThunk(
       return false;
     }
     return true;
-  },
+  }
 );
 
 export const authSlice = createSlice({
