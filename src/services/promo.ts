@@ -7,6 +7,8 @@ export type Promo = {
   store_id: string;
   start_date: string;
   end_date: string;
+  title_en: string;
+  title_he: string;
   description_en: string;
   description_he: string;
   image_url: string;
@@ -18,6 +20,8 @@ export const promoType = {
   store_id: 'string',
   start_date: 'string',
   end_date: 'string',
+  title_en: 'string',
+  title_he: 'string',
   description_en: 'string',
   description_he: 'string',
   image_url: 'string',
