@@ -37,7 +37,7 @@ S3_BUCKET = "shuk-app-api"
 IMAGE_URL_PREFIX = f"https://api.shukapp.com/{S3_DIRECTORY}"
 
 # Users with these emails are allowed to use the API.
-ALLOWED_ADMIN_EMAILS = ["vykbal@gmail.com", "dlefkowitz123@gmail.com", "tvergho@gmail.com"]
+ALLOWED_ADMIN_EMAILS = ["vykbal@gmail.com", "dlefkowitz123@gmail.com", "bipinvaylu@gmail.com"]
 
 # The Swagger, OpenAPI, Redoc documentation URLs will be prefixed with
 # this string. This reason is to make the docs less discoverable
